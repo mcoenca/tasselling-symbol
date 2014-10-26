@@ -1,3 +1,5 @@
 __pycache__
-rottentomatoes_api_key.py
 *.list
+rottentomatoes_api_key.py
+metacritic_api_key.py
+
