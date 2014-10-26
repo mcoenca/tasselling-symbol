@@ -1,6 +1,6 @@
 __pycache__
-*.list
 rottentomatoes_api_key.py
 metacritic_api_key.py
 *~
-
+*.list
+*.json
