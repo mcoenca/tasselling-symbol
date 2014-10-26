@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import requests
 from rottentomatoes_api_key import RT_KEY
 
@@ -28,8 +29,7 @@ def reviews(movie_id, review_type='all', country='us', page=1, page_limit=50):
         page_limit=page_limit)
 
 def main():
-    print(search('shawshank'))
-    print(reviews(12989))
+    print(search(sys.argv[1]))
 
 if __name__ == '__main__':
     main()
