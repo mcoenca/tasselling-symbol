@@ -4,3 +4,4 @@ metacritic_api_key.py
 *~
 *.list
 *.json
+*.pyc
