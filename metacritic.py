@@ -48,24 +48,25 @@ def critic_reviews(url, sort=None):
         params["sort"] = sort
     return requests.get(GET_CRITIC_REVIEWS, params=params, headers=headers).json()
 
-def user_reviews(url, count, sort=None):
+def user_reviews(url, count=None, sort=None):
     headers={
         "X-Mashape-Key": MT_KEY,
         "Content-Type": "application/x-www-form-urlencoded"
     }
     params={
-        "page_count": count,
         "url": url
     }
     if sort:
         params["sort"] = sort
+    if count:
+        params["page_count"] = count
     return requests.get(GET_USER_REVIEWS, params=params, headers=headers).json()
 
 
 def main():
-    print(find_movie(2,'Fast & Furious 6'))
-    print(search_movie(3,2,'Fast'))
-    print(critic_reviews('http://www.metacritic.com/game/pc/portal-2'))
+    #print(find_movie(2,'Fast & Furious 6'))
+    #print(search_movie(3,2,'Fast'))
+    #print(critic_reviews('http://www.metacritic.com/game/pc/portal-2'))
     print(user_reviews('http://www.metacritic.com/game/pc/portal-2',5))
 
 if __name__ == '__main__':
