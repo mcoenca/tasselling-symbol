@@ -2,11 +2,12 @@
 
 import metacritic
 import json
+import traceback
 
 META_FILM_LIMIT = 10
 
 
-def get_meta_film_info(title):
+def get_meta_film_info(title, key):
     print("Getting listing for {} ... ".format(title), end="")
     results = metacritic.search_movie(1, 2, title)
     searchresults = results['results']
@@ -29,6 +30,7 @@ def get_meta_film_info(title):
     else:
         print("Failure")
     everything = {
+        "key": key,
         "title": title,
         "first": first,
         "critic_reviews": critic_reviews,
@@ -36,28 +38,33 @@ def get_meta_film_info(title):
     }
     return everything
 
-def get_all_meta(titles, filename):
+def get_all_meta(titles, filename, start, end):
     with open(filename,"w") as outfile:
-        i = 0
+        i = start
         outfile.write("[")
         for title in titles:
-            if i >= META_FILM_LIMIT:
+            if i >= end:
                 break
             i += 1
-            info = get_meta_film_info(title)
+            print("{} : {}/{} -- ".format(i, i-start, end-start),end="")
+            try:
+                info = get_meta_film_info(title, i)
+            except:
+                print("Error")
+                traceback.print_exc()
             if info is None:
                 print("Failure getting {}".format(title))
             json.dump(info,outfile)
-            outfile.write(",")
+            if i < end:
+                outfile.write(",")
         outfile.write("]")
 
 def main():
     with open('films', 'r') as f:
         titles = []
-        i = 0
         for title in f:
             titles.append(title.strip())
-        get_all_meta(titles, "meta_data.json")
+        get_all_meta(titles, "meta_data.json",0,META_FILM_LIMIT)
 
 if __name__ == '__main__':
     main()
