@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import rotten, time, json, traceback
+import rotten, time, json, traceback, argparse
 
 SLEEP_TIME = 0.3
-FILM_LIMIT = 3
 OUTPUT_DIR = 'rotten'
 
 def get_all_reviews(movie_id, review_type):
@@ -52,7 +51,7 @@ def get_rotten_film_info(title):
 
     return ans
 
-def get_all_rotten(filename, n):
+def get_all_rotten(filename, n, out_dir):
     with open(filename, 'r') as f:
         for i, title in enumerate(f):
             if i >= n:
@@ -61,7 +60,7 @@ def get_all_rotten(filename, n):
             print('{}/{}: {}'.format(i+1, n, title))
             try:
                 info = get_rotten_film_info(title)
-                filename = '{}/rotten_{:05}.json'.format(OUTPUT_DIR, i)
+                filename = '{}/rotten_{:05}.json'.format(out_dir, i)
                 with open(filename, 'w') as out:
                     json.dump(info, out)
                     print('  Wrote data to {}'.format(filename))
@@ -72,7 +71,16 @@ def get_all_rotten(filename, n):
                 traceback.print_exc()                
 
 def main():
-    get_all_rotten('films', FILM_LIMIT)
+    parser = argparse.ArgumentParser(
+        description='Fetch film info and reviews from rottentomatoes.com')
+    parser.add_argument('films',
+        help='File containing film titles, one per line')
+    parser.add_argument('numfilms', type=int,
+        help='Number of films to fetch from file')
+    parser.add_argument('-d', '--dir', default=OUTPUT_DIR,
+        help='Directory in which to store fetched data')
+    args = parser.parse_args()
+    get_all_rotten(args.films, args.numfilms, args.dir)
 
 if __name__ == '__main__':
     main()
