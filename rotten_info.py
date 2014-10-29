@@ -4,6 +4,7 @@ import rotten, time, json, traceback
 
 SLEEP_TIME = 0.3
 FILM_LIMIT = 3
+OUTPUT_DIR = 'rotten'
 
 def get_all_reviews(movie_id, review_type):
     ans = []
@@ -51,30 +52,27 @@ def get_rotten_film_info(title):
 
     return ans
 
-def get_all_rotten(titles):
-    with open('rotten_info.json', 'w') as out:
-        out.write('[')
-        n = len(titles)
-        for i, title in enumerate(titles):
+def get_all_rotten(filename, n):
+    with open(filename, 'r') as f:
+        for i, title in enumerate(f):
+            if i >= n:
+                break
+            title = title.strip()
             print('{}/{}: {}'.format(i+1, n, title))
             try:
                 info = get_rotten_film_info(title)
-                json.dump(info, out)
+                filename = '{}/rotten_{:05}.json'.format(OUTPUT_DIR, i)
+                with open(filename, 'w') as out:
+                    json.dump(info, out)
+                    print('  Wrote data to {}'.format(filename))
+            except KeyboardInterrupt:
+                break
             except:
                 print('  Error')
                 traceback.print_exc()                
-            if i < n-1:
-                out.write(',')
-        out.write(']')
 
 def main():
-    with open('films', 'r') as f:
-        titles = []
-        for i,title in enumerate(f):
-            if i >= FILM_LIMIT:
-                break
-            titles.append(title.strip())
-        get_all_rotten(titles)
+    get_all_rotten('films', FILM_LIMIT)
 
 if __name__ == '__main__':
     main()

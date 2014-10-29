@@ -2,7 +2,7 @@
 
 import sys
 import requests
-from rottentomatoes_api_key import RT_KEY
+from rotten_api_key import RT_KEY
 
 RT_URL_BASE = 'http://api.rottentomatoes.com/api/public/v1.0/'
 RT_URL_SEARCH = RT_URL_BASE + 'movies.json' 
