@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import rotten, time, json, traceback, argparse
+import rotten, time, json, traceback, argparse, os.path
 
 SLEEP_TIME = 0.3
 OUTPUT_DIR = 'rotten'
@@ -25,31 +25,59 @@ def get_all_reviews(movie_id, review_type):
 
     return ans
 
-def get_rotten_film_info(title):
+def complete_film_info(info, title):
+    changed = False
     time.sleep(SLEEP_TIME)
-    ans = { "title" : title }
+    info['title'] = title
     
-    response = rotten.search(title)
-    if (response['total'] == 0):
-        return ans
-    movie = response['movies'][0]
-    ans['movie'] = movie
-    print('  Got movie info')
+    if 'movie' in info:
+        print('  Already had movie info')
+        movie = info['movie']
+    else:
+        response = rotten.search(title)
+        if (response['total'] == 0):
+            return changed
+        movie = response['movies'][0]
+        info['movie'] = movie
+        changed = True
+        print('  Fetched movie info')
 
     movie_id = movie['id']
 
-    reviews_top = get_all_reviews(movie_id, 'top_critic')
-    print('  Got top reviews: {}'.format(len(reviews_top)))
+    if 'top_critic_reviews' in info:
+        print('  Already had top critic reviews')
+    else:
+        reviews_top = get_all_reviews(movie_id, 'top_critic')
+        print('  Fetched top critic reviews: {}'.format(len(reviews_top)))
+        info['top_critic_reviews'] = reviews_top
+        changed = True
    
-    reviews_all = get_all_reviews(movie_id, 'all') 
-    print('  Got all reviews: {}'.format(len(reviews_all)))
+    if 'all_reviews' in info:
+        print('  Already had all reviews')
+    else:
+        reviews_all = get_all_reviews(movie_id, 'all') 
+        print('  Fetched all reviews: {}'.format(len(reviews_all)))
+        info['all_reviews'] = reviews_all
+        changed = True
 
-    ans['reviews'] = {
-        'top_critic': reviews_top, 
-        'all' : reviews_all
-    }
+    return changed
 
-    return ans
+def get_one_film(title, filename):
+    if os.path.isfile(filename):
+        with open(filename, 'r') as f:
+            info = json.load(f)
+    else:
+        info = dict()
+
+    changed = complete_film_info(info, title)
+
+    if changed:
+        with open(filename, 'w') as out:
+            json.dump(info, out)
+            print('  Wrote data to {}'.format(filename))
+    else:
+        print('  Nothing changed, no need to overwrite')
+
 
 def get_all_rotten(filename, n, out_dir):
     with open(filename, 'r') as f:
@@ -59,16 +87,15 @@ def get_all_rotten(filename, n, out_dir):
             title = title.strip()
             print('{}/{}: {}'.format(i+1, n, title))
             try:
-                info = get_rotten_film_info(title)
                 filename = '{}/rotten_{:05}.json'.format(out_dir, i)
-                with open(filename, 'w') as out:
-                    json.dump(info, out)
-                    print('  Wrote data to {}'.format(filename))
+                get_one_film(title, filename)
             except KeyboardInterrupt:
                 break
             except:
                 print('  Error')
-                traceback.print_exc()                
+                traceback.print_exc()
+            if i < n-1:
+                print()
 
 def main():
     parser = argparse.ArgumentParser(
@@ -78,7 +105,8 @@ def main():
     parser.add_argument('numfilms', type=int,
         help='Number of films to fetch from file')
     parser.add_argument('-d', '--dir', default=OUTPUT_DIR,
-        help='Directory in which to store fetched data')
+        help='Directory in which to store fetched data (default: {})'.
+        format(OUTPUT_DIR))
     args = parser.parse_args()
     get_all_rotten(args.films, args.numfilms, args.dir)
 
