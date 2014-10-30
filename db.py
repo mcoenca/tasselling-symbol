@@ -15,9 +15,9 @@ class Movie(BaseModel):
     imdb_id = BigIntegerField(unique=True, null=True)
     rotten_id = BigIntegerField(unique=True)
     
-    year = IntegerField()
+    year = IntegerField(null=True)
     mpaa_rating = CharField()
-    runtime = IntegerField()
+    runtime = IntegerField(null=True)
     
     critics_score = IntegerField()
     audience_score = IntegerField()

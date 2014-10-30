@@ -27,17 +27,20 @@ def store_cast(cast, movie):
     for actor in cast:
         store_roles(actor, movie)
 
+def int_or_none(str):
+    if str:
+        return int(str)
+    else:
+        None
+
 def store_movie(movie):
     try:
         imdb_id = movie['alternate_ids']['imdb']
     except KeyError:
         imdb_id = None
     rotten_id = int(movie['id'])
-    year = int(movie['year'])
-    if movie['runtime'] == '':
-        runtime = 0
-    else:
-        runtime = int(movie['runtime'])
+    year = int_or_none(movie['year'])
+    runtime = int_or_none(movie['runtime'])
     critics_score = int(movie['ratings']['critics_score'])
     audience_score = int(movie['ratings']['audience_score'])
     try:
