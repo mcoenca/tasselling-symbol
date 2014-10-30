@@ -28,8 +28,10 @@ def get_all_reviews(movie_id, review_type):
 def complete_film_info(info, title):
     changed = False
     time.sleep(SLEEP_TIME)
-    info['title'] = title
-    
+    if not 'title' in info:
+        info['title'] = title
+        changed = True
+
     if 'movie' in info:
         print('  Already had movie info')
         movie = info['movie']
