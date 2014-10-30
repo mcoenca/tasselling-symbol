@@ -4,16 +4,31 @@ import metacritic
 import json
 import traceback
 
-META_FILM_LIMIT = 10
+META_FILM_LIMIT = 5000
 
 
 def get_meta_film_info(title, key):
     print("Getting listing for {} ... ".format(title), end="")
     results = metacritic.search_movie(1, 2, title)
+    if 'results' not in results:
+        everything = {
+            "key": key,
+            "title": title,
+            "first": None,
+            "critic_reviews": None,
+            "user_reviews": None
+        }
+        return everything
     searchresults = results['results']
     if len(searchresults) is 0:
-        print("Failure: Found no results")
-        return None
+        everything = {
+            "key": key,
+            "title": title,
+            "first": None,
+            "critic_reviews": None,
+            "user_reviews": None
+        }
+        return everything
     print("Success")
     first = searchresults[0]
     url = first['url']
@@ -38,33 +53,39 @@ def get_meta_film_info(title, key):
     }
     return everything
 
-def get_all_meta(titles, filename, start, end):
+
+def write_file(title, filename, i, start, end):
     with open(filename,"w") as outfile:
-        i = start
-        outfile.write("[")
-        for title in titles:
-            if i >= end:
-                break
-            i += 1
-            print("{} : {}/{} -- ".format(i, i-start, end-start),end="")
-            try:
-                info = get_meta_film_info(title, i)
-            except:
-                print("Error")
-                traceback.print_exc()
+        print("{} : {}/{} -- ".format(i, i-start, end-start),end="")
+        try:
+            info = get_meta_film_info(title, i)
             if info is None:
                 print("Failure getting {}".format(title))
-            json.dump(info,outfile)
-            if i < end:
-                outfile.write(",")
-        outfile.write("]")
+            else:
+                json.dump(info,outfile)
+        except:
+            print("Error")
+            traceback.print_exc()
+        
+
+
+def get_all_meta(titles, filename, start, end):
+    i = start
+    while True:
+        title = titles[i]
+        if i >= end:
+            break
+        this_filename = str(filename)+"_"+str(i)+".json"
+        write_file(title,this_filename,i,start,end)
+        i += 1
+
 
 def main():
     with open('films', 'r') as f:
         titles = []
         for title in f:
             titles.append(title.strip())
-        get_all_meta(titles, "meta_data.json",0,META_FILM_LIMIT)
+        get_all_meta(titles, "meta2/meta", 2400, META_FILM_LIMIT)
 
 if __name__ == '__main__':
     main()
