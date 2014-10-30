@@ -31,7 +31,7 @@ def int_or_none(str):
     if str:
         return int(str)
     else:
-        None
+        return None
 
 def store_movie(movie):
     try:
