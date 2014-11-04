@@ -21,6 +21,7 @@ class Movie(BaseModel):
     criticreviews = IntegerField(null=True)
 
 class UserReview(BaseModel):
+    id = PrimaryKeyField()
     date = CharField(max_length=255, null=True)
     total_thumbs = IntegerField()
     review = TextField()
@@ -30,6 +31,7 @@ class UserReview(BaseModel):
     movie = ForeignKeyField(Movie, related_name='user_reviews')
 
 class CriticReview(BaseModel):
+    id = PrimaryKeyField()
     link = CharField(max_length=255, null=True)
     critic = CharField(max_length=255, null=True)
     excerpt = TextField()
