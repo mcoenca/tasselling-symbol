@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import json, peewee, argparse, os, os.path
-from db import *
+from rotten_db import *
 
 INPUT_DIR = 'rotten'
 
