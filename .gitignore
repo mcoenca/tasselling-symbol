@@ -6,3 +6,4 @@ metacritic_api_key.py
 *.json
 *.pyc
 *.db
+*.bak

@@ -2,9 +2,12 @@ from peewee import *
 
 db = SqliteDatabase('meta.db')
 
+
 class BaseModel(Model):
+
     class Meta:
         database = db
+
 
 class Movie(BaseModel):
     id = PrimaryKeyField()
@@ -20,6 +23,7 @@ class Movie(BaseModel):
     userreviews = IntegerField(null=True)
     criticreviews = IntegerField(null=True)
 
+
 class UserReview(BaseModel):
     id = PrimaryKeyField()
     date = CharField(max_length=255, null=True)
@@ -29,6 +33,7 @@ class UserReview(BaseModel):
     total_ups = IntegerField()
     score = IntegerField()
     movie = ForeignKeyField(Movie, related_name='user_reviews')
+
 
 class CriticReview(BaseModel):
     id = PrimaryKeyField()
