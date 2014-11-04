@@ -21,7 +21,7 @@ def reviews_per_movie():
 
 def reviews_per_user():
     results = UserReview.select().order_by(UserReview.name)
-    current_user = '%%%%%##%%^%%%%'  # that magic string
+    current_user = results[0].name
     count = 0
     review_list = []
     for result in results:
@@ -38,7 +38,7 @@ def reviews_per_user():
 
 def reviews_per_critic():
     results = CriticReview.select().order_by(CriticReview.critic)
-    current_critic = '%%%%%##%%^%%%%'  # that magic string
+    current_critic = results[0].critic
     count = 0
     review_list = []
     for result in results:
@@ -54,7 +54,7 @@ def reviews_per_critic():
     return sorted(review_list, key=lambda x: -(x[1]))
 
 
-def review_stats():
+def movie_stats():
     data = reviews_per_movie()
     stats.print_stats('critics', data["critic_reviews"], [25, 50, 75])
     stats.print_stats('users', data["user_reviews"], [25, 50, 75, 90])
@@ -65,6 +65,7 @@ def user_critic_stats():
     users, ucounts = zip(*reviews_per_user())
     stats.print_stats('users', ucounts, [25, 50, 75, 90])
 
-
-review_stats()
+print("Movie stats")
+movie_stats()
+print("User and critic stats")
 user_critic_stats()

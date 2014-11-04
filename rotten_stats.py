@@ -30,7 +30,7 @@ def reviews_per_movie():
 
 def reviews_per_critic():
     results = Review.select().order_by(Review.critic)
-    current_critic = '%%%%%##%%^%%%%'  # that magic string
+    current_critic = results[0].critic.name 
     top = 0
     other = 0
     count = 0
@@ -56,7 +56,7 @@ def reviews_per_critic():
 
 def reviews_per_publication():
     results = Review.select().order_by(Review.publication)
-    current_publication = '%%%%%##%%^%%%%'  # that magic string
+    current_publication = results[0].publication.name
     top = 0
     other = 0
     count = 0
@@ -104,4 +104,9 @@ def publications_stats():
     stats.print_stats("other", other, [50, 80, 90, 99])
     stats.print_stats("total", total, [50, 80, 90, 99])
 
+print("Movie stats")
+reviews_stats()
+print("Critic stats")
+critics_stats()
+print("Publication stats")
 publications_stats()
