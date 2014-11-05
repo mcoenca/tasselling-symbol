@@ -7,67 +7,99 @@ class StochasticGradientDescent:
 	__step_size = 1
 	__lambda_val = 0.1
 	__dimension = 1
+	__examples = None
+	__test_examples = None
+	critic_rows = None
+	movie_cols = None
+	
 
-	def __init__(self, step, l, dimension):
-		self.__lambda_val = l
+	def __init__(self, examples, step=0.002, lambda_val=0, 
+				 dimension=1, movies=None, critics=None, test_examples=None):
+		self.__lambda_val = lambda_val
 		self.__step_size = step
 		self.__dimension = dimension
+		self.__examples = examples
+		self.__test_examples = test_examples
+		self.__regularize_const = self.__lambda_val*2/ len(self.__examples)
+		if not movies:
+			_, all_movies, _ = zip(*examples)
+			movies = max(all_movies) + 1
+		if not critics:
+			all_critics, _, _ = zip(*examples)
+			critics = max(all_critics) + 1
+		self.critic_rows = np.random.rand(critics, self.__dimension)
+		self.movie_cols = np.random.rand(self.__dimension, movies)
 
-	def stochastic_descent(self, iters, thresh, examples, movies, critics):
-		critic_rows = np.random.rand(movies, self.__dimension)
-		movie_cols = np.random.rand(self.__dimension, critics)
-		num_examples = len(examples)
-		regularize_const = self.__lambda_val*2/float(num_examples)
-		thresh = 0
-		sumgrads = 0
-		for _ in range(iters):
-			rand.shuffle(examples)
-			for example in examples:
-				rows = critic_rows[example[0],:]
-				cols = movie_cols[:,example[1]]
-				value = example[2]
-				row_grad, col_grad = \
-					self.__partial_gradient(rows, cols, value, regularize_const)
-				critic_rows[example[0], :] -= row_grad
-				movie_cols[:, example[1]] -= col_grad
-				sumgrads += sum(abs(row_grad))+sum(abs(col_grad))
+
+	def stochastic_descent(self, iters, thresh=0, print_iter=False, 
+						   print_error=False, print_iterations=1):
+		for i in range(iters):
+			sumgrads = self.stochastic_iteration()
 			if sumgrads <= thresh:
 				break
-			sumgrads = 0
-		return critic_rows, movie_cols
+			if i % print_iterations == 0:
+				if print_iter:
+					print("Completed iteration {}".format(i))
+				if print_error:
+					error, count = self.calculate_error(self.__examples)
+					print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
+						.format("training", error, count, error/count))
+				if print_error and self.__test_examples:
+					error, count = self.calculate_error(self.__test_examples)
+					print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
+						.format("testing", error, count, error/count))
 
 
-	def __partial_gradient(self, row, col, value, regularize_const):
+	def stochastic_iteration(self):
+		sumgrads = 0
+		rand.shuffle(self.__examples)
+		for example in self.__examples:
+			row_grad, col_grad = self.__partial_gradient(example)
+			sumgrads += sum(abs(row_grad))+sum(abs(col_grad))
+		return sumgrads
+
+
+	def calculate_error(self, examples):
+		predictor = self.critic_rows.dot(self.movie_cols)
+		cumulative_sq_error = 0
+		for example in examples:
+			critic, movie, value = example
+			expected_value = predictor[critic, movie]
+			cumulative_sq_error += (value - expected_value)**2
+		return cumulative_sq_error, len(examples)
+
+
+	def __partial_gradient(self, example):
+		#extraction
+		row = self.critic_rows[example[0],:]
+		col = self.movie_cols[:,example[1]]
+		value = example[2]
 		#calculation
 		calculated_value = row.dot(col)
 		gradient = -2*(value - calculated_value)
 		gradient_step = self.__step_size * gradient
 		#column reg
-		row_regularize = row*regularize_const
-		column_regularize = col*regularize_const
-		#update
+		row_regularize = row*self.__regularize_const
+		column_regularize = col*self.__regularize_const
+		#combine
 		row_gradient = gradient_step*col.T + row_regularize
 		col_gradient = gradient_step*row.T + column_regularize
 		#update
+		self.critic_rows[example[0], :] -= row_gradient
+		self.movie_cols[:, example[1]] -= col_gradient
+		#return gradients
 		return row_gradient, col_gradient
 
-def train_test(train, test, movies, critic, sgd, iters):
-	row, col = sgd.stochastic_descent(iters, train, movies, critics)
-	predictor = row*col
-	badness = 0
-	for ex in train:
-		i,j,rate = ex
-		badness += (predictor[i,j] - rate)**2
-
 def main():
-	sgd = StochasticGradientDescent(0.02, 0, 2)
 	test_data = [(0,0,3),(0,1,6),(0,2,9),(1,0,4),(1,1,8),(1,2,12),(2,0,5),(2,1,10),(2,2,15)]
-
-	row,col = sgd.stochastic_descent(500, 0, test_data, 3, 3)
-	print(row)
-	print(col)
+	sgd = StochasticGradientDescent(test_data)
+	sgd.stochastic_descent(200, print_error=True, print_iterations=10)
+	rows = sgd.critic_rows
+	cols = sgd.movie_cols
+	print(rows)
+	print(cols)
 	print()
-	print(row.dot(col))
+	print(rows.dot(cols))
 
 if __name__ == '__main__':
 	main()
