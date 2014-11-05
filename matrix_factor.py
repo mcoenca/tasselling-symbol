@@ -13,7 +13,7 @@ class StochasticGradientDescent:
 		self.__step_size = step
 		self.__dimension = dimension
 
-	def stochastic_descent(self, iters, examples, movies, critics):
+	def stochastic_descent(self, iters, thresh, examples, movies, critics):
 		critic_rows = np.ones((movies, self.__dimension))
 		movie_cols = np.ones((self.__dimension, critics))
 		num_examples = len(examples)
@@ -62,7 +62,7 @@ def train_test(train, test, movies, critic, sgd, iters):
 sgd = StochasticGradientDescent(0.02, 0, 1)
 test_data = [(0,0,3),(0,1,6),(0,2,9),(1,0,4),(1,1,8),(1,2,12),(2,0,5),(2,1,10),(2,2,15)]
 
-row,col = sgd.stochastic_descent(30, test_data, 3, 3)
+row,col = sgd.stochastic_descent(30, 0, test_data, 3, 3)
 print(row)
 print(col)
 print()
