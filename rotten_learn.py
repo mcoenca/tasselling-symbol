@@ -138,15 +138,23 @@ def main():
     ratings_train = ratings[:num_train]
     ratings_test = ratings[num_train:]
 
-    sgd = matrix_factor.StochasticGradientDescent(0.02, 0.5, 1000)
-    critics, movies = sgd.stochastic_descent(10, 0, ratings_train, 4475, 4539)
+    #critics, movies = sgd.stochastic_descent(10, 0, ratings_train, 4475, 4539)
+    sgd = matrix_factor.StochasticGradientDescent(ratings_train, test_examples=ratings_test)
+    critics, movies = sgd.stochastic_descent(20, print_error=True)
     
     predictor = critics.dot(movies)
-    badness = 0
+    badness_train = 0
+    for ex in ratings_train:
+        i,j,rate = ex
+        badness_train += (predictor[i,j] - rate)**2
+
+    badness_test = 0
     for ex in ratings_test:
         i,j,rate = ex
-        badness += (predictor[i,j] - rate)**2
-    print(badness)
+        badness_test += (predictor[i,j] - rate)**2
+
+    print("Average squared training error: {}".format(badness_train/len(ratings_train)))
+    print("Average squared test error: {}".format(badness_test/len(ratings_test)))
 
 if __name__ == '__main__':
     main()
