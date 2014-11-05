@@ -141,14 +141,21 @@ def remove_duplicate_reviews():
         .where(Review.is_top == True)
         .order_by(Review.critic))
 
+    already_dedup = set()
+
     for review in top_reviews:
+        tup = (review.critic.id, review.movie.id, review.date)
+        if tup in already_dedup:
+            print('Already deduped', tup)
+            continue
+        already_dedup.add(tup)
         delete_dup_reviews = (review
             .delete()
-            .where((review.is_top == True) & 
-                (review.critic == review.critic) &
-                (review.movie == review.movie) &
-                (review.id != review.id) &
-                (review.date == review.date)))
+            .where((Review.is_top == True) & 
+                (Review.critic == review.critic) &
+                (Review.movie == review.movie) &
+                (Review.id != review.id) &
+                (Review.date == review.date)))
         delete_dup_reviews.execute()
 
 def calculate_critic_similarity(critic_i, critic_j):
@@ -157,10 +164,20 @@ def calculate_critic_similarity(critic_i, critic_j):
         .join(Review)
         .where(Review.critic == critic_i))
 
+    movies_i_id = (Movie
+        .select(Movie.id)
+        .where(Review.critic == critic_i))
+
+    print(movies_i)
+    print()
+    print(movies_i_id)
+
     reviews_j = (Review
-        .select(Review.movie, Review.score, Movie.title)
-        .join(Movie)
-        .where(Review.movie << movies_i))
+        .select(Review.movie, Review.score)
+        .where(Review.movie << movies_i_id))
+
+    print()
+    print(reviews_j)
 
     for movie in movies_i:
         print(movie.title)
@@ -169,7 +186,7 @@ def calculate_critic_similarity(critic_i, critic_j):
         print(review.movie.title)
 
 def calculate_critic_similarities():
-    calculate_critic_similarity(1,2)
+    calculate_critic_similarity(1000,3)
 
 def estimate_rating_usercollab(critic_id, movie_id):
     return 0
@@ -195,8 +212,7 @@ def test_sgd():
 
 def main():
     #calculate_critic_similarities()
-    with db.transaction():
-        remove_duplicate_reviews()
+    remove_duplicate_reviews()
 
 if __name__ == '__main__':
     main()
