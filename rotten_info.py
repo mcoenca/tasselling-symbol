@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-import rotten, time, json, traceback, argparse, os.path
+import rotten, time, json, traceback, argparse, os.path, itertools
 
-SLEEP_TIME = 0.3
 OUTPUT_DIR = 'rotten'
 
 def get_all_reviews(movie_id, review_type):
     ans = []
-    time.sleep(SLEEP_TIME)
     response = rotten.reviews(movie_id, review_type=review_type)
     if (response['total'] == 0):
         return ans
@@ -16,7 +14,6 @@ def get_all_reviews(movie_id, review_type):
     
     next = response['links'].get('next', None)
     while next:
-        time.sleep(SLEEP_TIME)
         response = rotten.get(next)
         if (response['total'] == 0):
             return ans
@@ -27,7 +24,6 @@ def get_all_reviews(movie_id, review_type):
 
 def complete_film_info(info, title):
     changed = False
-    time.sleep(SLEEP_TIME)
     if not 'title' in info:
         info['title'] = title
         changed = True
@@ -82,22 +78,23 @@ def get_one_film(title, filename):
 
 
 def get_all_rotten(filename, n, out_dir):
+    titles = []
     with open(filename, 'r') as f:
-        for i, title in enumerate(f):
-            if i >= n:
-                break
-            title = title.strip()
-            print('{}/{}: {}'.format(i+1, n, title))
-            try:
-                filename = '{}/rotten_{:05}.json'.format(out_dir, i)
-                get_one_film(title, filename)
-            except KeyboardInterrupt:
-                break
-            except:
-                print('  Error')
-                traceback.print_exc()
-            if i < n-1:
-                print()
+        titles = list(itertools.islice(f, n))
+
+    for i, title in enumerate(titles):
+        title = title.strip()
+        print('{}/{}: {}'.format(i+1, n, title))
+        try:
+            filename = '{}/rotten_{:05}.json'.format(out_dir, i)
+            get_one_film(title, filename)
+        except KeyboardInterrupt:
+            break
+        except:
+            print('  Error')
+            traceback.print_exc()
+        if i < n-1:
+            print()
 
 def main():
     parser = argparse.ArgumentParser(
