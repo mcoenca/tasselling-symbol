@@ -17,6 +17,7 @@ class StochasticGradientDescent:
 		critic_rows = np.random.rand(movies, self.__dimension)
 		movie_cols = np.random.rand(self.__dimension, critics)
 		num_examples = len(examples)
+		regularize_const = self.__lambda_val*2/float(num_examples)
 		thresh = 0
 		sumgrads = 0
 		for _ in range(iters):
@@ -26,7 +27,7 @@ class StochasticGradientDescent:
 				cols = movie_cols[:,example[1]]
 				value = example[2]
 				row_grad, col_grad = \
-					self.__partial_gradient(rows, cols, value, num_examples)
+					self.__partial_gradient(rows, cols, value, regularize_const)
 				critic_rows[example[0], :] -= row_grad
 				movie_cols[:, example[1]] -= col_grad
 				sumgrads += sum(abs(row_grad))+sum(abs(col_grad))
@@ -36,13 +37,12 @@ class StochasticGradientDescent:
 		return critic_rows, movie_cols
 
 
-	def __partial_gradient(self, row, col, value, count):
+	def __partial_gradient(self, row, col, value, regularize_const):
 		#calculation
 		calculated_value = row.dot(col)
 		gradient = -2*(value - calculated_value)
 		gradient_step = self.__step_size * gradient
 		#column reg
-		regularize_const = self.__lambda_val*2/float(count)
 		row_regularize = row*regularize_const
 		column_regularize = col*regularize_const
 		#update

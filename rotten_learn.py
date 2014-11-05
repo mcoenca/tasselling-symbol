@@ -2,6 +2,8 @@
 
 import peewee, traceback, re, math
 from rotten_db import *
+import matrix_factor
+import numpy as np
 
 pattern = re.compile('([?\']|ao$|stars)')
 
@@ -124,30 +126,27 @@ def get_sparse_ratings():
             Review.score)
         .tuples())
 
-def mean(ratings):
-    n_ratings = 0
-    total = 0
-    for r in ratings:
-        total += r[2]
-        n_ratings += 1
-    return total / n_ratings
-
-def variance(ratings, mu):
-    n_ratings = 0
-    total = 0
-    for r in ratings:
-        total += (r[2] - mu) * (r[2] - mu)
-        n_ratings += 1
-    return total / n_ratings
-
 def main():
     ratings = get_sparse_ratings()
-    mu = mean(ratings)
-    var = variance(ratings, mu)
-    stdev = math.sqrt(var)
-    print(mu)
-    print(stdev)
-    ratings = [(c, m, (s - mu) / stdev) for (c,m,s) in ratings]
+    just_ratings = list(zip(*ratings))[2]
+    mu = np.mean(just_ratings)
+    std = np.std(just_ratings)
+    ratings = [(c, m, (s - mu) / std) for (c,m,s) in ratings]
+
+    num_ratings = len(ratings)
+    num_train = (4 * num_ratings) // 5 
+    ratings_train = ratings[:num_train]
+    ratings_test = ratings[num_train:]
+
+    sgd = matrix_factor.StochasticGradientDescent(0.02, 0.5, 1000)
+    critics, movies = sgd.stochastic_descent(10, 0, ratings_train, 4475, 4539)
+    
+    predictor = critics.dot(movies)
+    badness = 0
+    for ex in ratings_test:
+        i,j,rate = ex
+        badness += (predictor[i,j] - rate)**2
+    print(badness)
 
 if __name__ == '__main__':
     main()
