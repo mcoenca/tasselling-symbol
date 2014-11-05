@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import peewee, traceback, re
+import peewee, traceback, re, math
 from rotten_db import *
 
 pattern = re.compile('([?\']|ao$|stars)')
@@ -124,9 +124,30 @@ def get_sparse_ratings():
             Review.score)
         .tuples())
 
+def mean(ratings):
+    n_ratings = 0
+    total = 0
+    for r in ratings:
+        total += r[2]
+        n_ratings += 1
+    return total / n_ratings
+
+def variance(ratings, mu):
+    n_ratings = 0
+    total = 0
+    for r in ratings:
+        total += (r[2] - mu) * (r[2] - mu)
+        n_ratings += 1
+    return total / n_ratings
+
 def main():
-    with db.transaction():
-        process_scores()
+    ratings = get_sparse_ratings()
+    mu = mean(ratings)
+    var = variance(ratings, mu)
+    stdev = math.sqrt(var)
+    print(mu)
+    print(stdev)
+    ratings = [(c, m, (s - mu) / stdev) for (c,m,s) in ratings]
 
 if __name__ == '__main__':
     main()
