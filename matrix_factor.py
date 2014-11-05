@@ -59,11 +59,15 @@ def train_test(train, test, movies, critic, sgd, iters):
 		i,j,rate = ex
 		badness += (predictor[i,j] - rate)**2
 
-sgd = StochasticGradientDescent(0.02, 0, 2)
-test_data = [(0,0,3),(0,1,6),(0,2,9),(1,0,4),(1,1,8),(1,2,12),(2,0,5),(2,1,10),(2,2,15)]
+def main():
+	sgd = StochasticGradientDescent(0.02, 0, 2)
+	test_data = [(0,0,3),(0,1,6),(0,2,9),(1,0,4),(1,1,8),(1,2,12),(2,0,5),(2,1,10),(2,2,15)]
 
-row,col = sgd.stochastic_descent(500, 0, test_data, 3, 3)
-print(row)
-print(col)
-print()
-print(row.dot(col))
+	row,col = sgd.stochastic_descent(500, 0, test_data, 3, 3)
+	print(row)
+	print(col)
+	print()
+	print(row.dot(col))
+
+if __name__ == '__main__':
+	main()
