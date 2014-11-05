@@ -126,7 +126,55 @@ def get_sparse_ratings():
             Review.score)
         .tuples())
 
-def main():
+def remove_duplicate_reviews():
+    top_reviews = (Review
+        .select(
+            Review.id, 
+            Movie.id,
+            Movie.title,
+            Critic.id,
+            Critic.name,
+            Review.date)
+        .join(Movie)
+        .switch(Review)
+        .join(Critic)
+        .where(Review.is_top == True)
+        .order_by(Review.critic))
+
+    for review in top_reviews:
+        delete_dup_reviews = (review
+            .delete()
+            .where((review.is_top == True) & 
+                (review.critic == review.critic) &
+                (review.movie == review.movie) &
+                (review.id != review.id) &
+                (review.date == review.date)))
+        delete_dup_reviews.execute()
+
+def calculate_critic_similarity(critic_i, critic_j):
+    movies_i = (Movie
+        .select(Movie.id, Movie.title, Review.score)
+        .join(Review)
+        .where(Review.critic == critic_i))
+
+    reviews_j = (Review
+        .select(Review.movie, Review.score, Movie.title)
+        .join(Movie)
+        .where(Review.movie << movies_i))
+
+    for movie in movies_i:
+        print(movie.title)
+    print("YOLO")
+    for review in reviews_j:
+        print(review.movie.title)
+
+def calculate_critic_similarities():
+    calculate_critic_similarity(1,2)
+
+def estimate_rating_usercollab(critic_id, movie_id):
+    return 0
+
+def test_sgd():
     ratings = get_sparse_ratings()
     np.random.shuffle(ratings)
     just_ratings = list(zip(*ratings))[2]
@@ -144,6 +192,11 @@ def main():
         test_examples=ratings_test, critics=4475, movies=4539, dimension=25,
         lambda_val=3)
     sgd.stochastic_descent(100, print_error=True, print_iterations=True)
+
+def main():
+    #calculate_critic_similarities()
+    with db.transaction():
+        remove_duplicate_reviews()
 
 if __name__ == '__main__':
     main()
