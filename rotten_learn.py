@@ -128,6 +128,7 @@ def get_sparse_ratings():
 
 def main():
     ratings = get_sparse_ratings()
+    np.random.shuffle(ratings)
     just_ratings = list(zip(*ratings))[2]
     mu = np.mean(just_ratings)
     std = np.std(just_ratings)
@@ -139,22 +140,10 @@ def main():
     ratings_test = ratings[num_train:]
 
     #critics, movies = sgd.stochastic_descent(10, 0, ratings_train, 4475, 4539)
-    sgd = matrix_factor.StochasticGradientDescent(ratings_train, test_examples=ratings_test)
-    critics, movies = sgd.stochastic_descent(20, print_error=True)
-    
-    predictor = critics.dot(movies)
-    badness_train = 0
-    for ex in ratings_train:
-        i,j,rate = ex
-        badness_train += (predictor[i,j] - rate)**2
-
-    badness_test = 0
-    for ex in ratings_test:
-        i,j,rate = ex
-        badness_test += (predictor[i,j] - rate)**2
-
-    print("Average squared training error: {}".format(badness_train/len(ratings_train)))
-    print("Average squared test error: {}".format(badness_test/len(ratings_test)))
+    sgd = matrix_factor.StochasticGradientDescent(ratings_train, 
+        test_examples=ratings_test, critics=4475, movies=4539, dimension=25,
+        lambda_val=3)
+    sgd.stochastic_descent(100, print_error=True, print_iterations=True)
 
 if __name__ == '__main__':
     main()

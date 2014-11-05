@@ -21,14 +21,10 @@ class StochasticGradientDescent:
 		self.__examples = examples
 		self.__test_examples = test_examples
 		self.__regularize_const = self.__lambda_val*2/ len(self.__examples)
-		if not movies:
-			_, all_movies, _ = zip(*examples)
-			movies = max(all_movies) + 1
-		if not critics:
-			all_critics, _, _ = zip(*examples)
-			critics = max(all_critics) + 1
-		self.critic_rows = np.random.rand(critics, self.__dimension)
-		self.movie_cols = np.random.rand(self.__dimension, movies)
+		if not movies or not critics:
+			raise ValueError("Must specify movies and critics")
+		self.critic_rows = np.random.rand(critics, self.__dimension) / self.__dimension
+		self.movie_cols = np.random.rand(self.__dimension, movies) / self.__dimension
 
 
 	def stochastic_descent(self, iters, thresh=0, print_iter=False, 
