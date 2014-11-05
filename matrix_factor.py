@@ -2,6 +2,7 @@
 
 import numpy as np
 import random as rand
+import json
 
 class StochasticGradientDescent:
 	__step_size = 1
@@ -9,17 +10,20 @@ class StochasticGradientDescent:
 	__dimension = 1
 	__examples = None
 	__test_examples = None
+	__filename = None
+	__iteration_record = []
 	critic_rows = None
 	movie_cols = None
 	
 
-	def __init__(self, examples, step=0.002, lambda_val=0, 
-				 dimension=1, movies=None, critics=None, test_examples=None):
+	def __init__(self, examples, step=0.002, lambda_val=0, dimension=1, 
+				movies=None, critics=None, test_examples=None, filename=None):
 		self.__lambda_val = lambda_val
 		self.__step_size = step
 		self.__dimension = dimension
 		self.__examples = examples
 		self.__test_examples = test_examples
+		self.__filename = filename
 		self.__regularize_const = self.__lambda_val*2/ len(self.__examples)
 		if not movies or not critics:
 			raise ValueError("Must specify movies and critics")
@@ -27,23 +31,46 @@ class StochasticGradientDescent:
 		self.movie_cols = np.random.rand(self.__dimension, movies) / self.__dimension
 
 
+	def iteration_printer(self, it):
+		example_err, example_count = self.calculate_error(self.__examples)
+		if self.__filename:
+			training = ("tr",it,example_err,example_count)
+			testing = tuple()
+			if self.__test_examples:
+				test_err, test_count = self.calculate_error(self.__test_examples)
+				testing = ("te",it,test_err,test_count)
+			self.__iteration_record.append((training, testing))
+		else:
+			error, count = self.calculate_error(self.__examples)
+			print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
+				.format("training", error, count, error/count))
+			if self.__test_examples:
+				error, count = self.calculate_error(self.__test_examples)
+				print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
+					.format("testing", error, count, error/count))
+
+
 	def stochastic_descent(self, iters, thresh=0, print_iter=False, 
-						   print_error=False, print_iterations=1):
+						   print_error=False, print_every=1):
 		for i in range(iters):
 			sumgrads = self.stochastic_iteration()
 			if sumgrads <= thresh:
 				break
-			if i % print_iterations == 0:
+			if i % print_every == 0:
 				if print_iter:
 					print("Completed iteration {}".format(i))
 				if print_error:
-					error, count = self.calculate_error(self.__examples)
-					print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
-						.format("training", error, count, error/count))
-				if print_error and self.__test_examples:
-					error, count = self.calculate_error(self.__test_examples)
-					print("{0} : {1:0.1f} error in {2} examples => {3:0.3f} average"\
-						.format("testing", error, count, error/count))
+					self.iteration_printer(i)
+		if self.__filename and print_error:
+			with open(self.__filename, "w") as fp:
+				params = {
+					"lambda" : self.__lambda_val,
+					"dimension" : self.__dimension,
+					"step" : self.__step_size,
+					"result" : self.__iteration_record
+				}
+				json.dump(params, fp, indent=4)
+					
 
 
 	def stochastic_iteration(self):
