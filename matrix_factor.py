@@ -14,8 +14,8 @@ class StochasticGradientDescent:
 		self.__dimension = dimension
 
 	def stochastic_descent(self, iters, thresh, examples, movies, critics):
-		critic_rows = np.ones((movies, self.__dimension))
-		movie_cols = np.ones((self.__dimension, critics))
+		critic_rows = np.random.rand(movies, self.__dimension)
+		movie_cols = np.random.rand(self.__dimension, critics)
 		num_examples = len(examples)
 		thresh = 0
 		sumgrads = 0
@@ -38,7 +38,7 @@ class StochasticGradientDescent:
 
 	def __partial_gradient(self, row, col, value, count):
 		#calculation
-		calculated_value = row*col
+		calculated_value = row.dot(col)
 		gradient = -2*(value - calculated_value)
 		gradient_step = self.__step_size * gradient
 		#column reg
@@ -59,11 +59,11 @@ def train_test(train, test, movies, critic, sgd, iters):
 		i,j,rate = ex
 		badness += (predictor[i,j] - rate)**2
 
-sgd = StochasticGradientDescent(0.02, 0, 1)
+sgd = StochasticGradientDescent(0.02, 0, 2)
 test_data = [(0,0,3),(0,1,6),(0,2,9),(1,0,4),(1,1,8),(1,2,12),(2,0,5),(2,1,10),(2,2,15)]
 
-row,col = sgd.stochastic_descent(30, 0, test_data, 3, 3)
+row,col = sgd.stochastic_descent(500, 0, test_data, 3, 3)
 print(row)
 print(col)
 print()
-print(row*col)
+print(row.dot(col))
