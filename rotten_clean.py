@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import peewee, traceback, re, math
 from rotten_db import *
-import matrix_factor
-import numpy as np
 
 pattern = re.compile('([?\']|ao$|stars)')
 
@@ -118,14 +116,6 @@ def process_scores():
         review.score = score
         review.save()
 
-def get_sparse_ratings():
-    return list(Review
-        .select(
-            Review.critic,
-            Review.movie,
-            Review.score)
-        .tuples())
-
 def remove_duplicate_reviews():
     top_reviews = (Review
         .select(
@@ -158,61 +148,9 @@ def remove_duplicate_reviews():
                 (Review.date == review.date)))
         delete_dup_reviews.execute()
 
-def calculate_critic_similarity(critic_i, critic_j):
-    movies_i = (Movie
-        .select(Movie.id, Movie.title, Review.score)
-        .join(Review)
-        .where(Review.critic == critic_i))
-
-    movies_i_id = (Movie
-        .select(Movie.id)
-        .where(Review.critic == critic_i))
-
-    print(movies_i)
-    print()
-    print(movies_i_id)
-
-    reviews_j = (Review
-        .select(Review.movie, Review.score)
-        .where(Review.movie << movies_i_id))
-
-    print()
-    print(reviews_j)
-
-    for movie in movies_i:
-        print(movie.title)
-    print("YOLO")
-    for review in reviews_j:
-        print(review.movie.title)
-
-def calculate_critic_similarities():
-    calculate_critic_similarity(1000,3)
-
-def estimate_rating_usercollab(critic_id, movie_id):
-    return 0
-
-def test_sgd():
-    ratings = get_sparse_ratings()
-    np.random.shuffle(ratings)
-    just_ratings = list(zip(*ratings))[2]
-    mu = np.mean(just_ratings)
-    std = np.std(just_ratings)
-    ratings = [(c, m, (s - mu) / std) for (c,m,s) in ratings]
-
-    num_ratings = len(ratings)
-    num_train = (4 * num_ratings) // 5 
-    ratings_train = ratings[:num_train]
-    ratings_test = ratings[num_train:]
-
-    #critics, movies = sgd.stochastic_descent(10, 0, ratings_train, 4475, 4539)
-    sgd = matrix_factor.StochasticGradientDescent(ratings_train, 
-        test_examples=ratings_test, critics=4475, movies=4539, dimension=25,
-        lambda_val=3)
-    sgd.stochastic_descent(100, print_error=True, print_iterations=True)
-
 def main():
-    #calculate_critic_similarities()
-    remove_duplicate_reviews()
+    with db.transaction():
+        remove_duplicate_reviews()
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,14 @@
-from rotten_learn import *
-import matrix_factor as mf
-import argparse
+#!/usr/bin/env python3
 
+from rotten_db import *
+import argparse
+import numpy as np
+import matrix_factor
+
+def get_sparse_ratings():
+    return list(Review
+        .select(Review.critic, Review.movie, Review.score)
+        .tuples())
 
 def run_test(iterations, dimension, lambda_v, step, filename):
     ratings = get_sparse_ratings()
