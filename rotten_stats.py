@@ -128,12 +128,12 @@ def publications_stats():
     stats.latex_table_r(top,other,total=total)
     stats.plot(top, 200, 
         title = "Cumulative Histogram of Movies Reviewed per Top Publication",
-        xlabel = "Number of Publication",
+        xlabel = "Number of Publications",
         ylabel = "Cdf of Movies per Publication",
         fname = "reports/plot_r_pub_top.png")
     stats.plot(other, 200, 
         title = "Cumulative Histogram of Movies Reviewed per Other Publication",
-        xlabel = "Number of Publication",
+        xlabel = "Number of Publications",
         ylabel = "Cdf of Movies per Publication",
         fname = "reports/plot_r_pub_oth.png")
 
