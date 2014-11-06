@@ -56,14 +56,37 @@ def reviews_per_critic():
 
 def movie_stats():
     data = reviews_per_movie()
-    stats.print_stats('critics', data["critic_reviews"], [25, 50, 75])
-    stats.print_stats('users', data["user_reviews"], [25, 50, 75, 90])
+    #stats.print_stats('critics', data["critic_reviews"], [25, 50, 75])
+    #stats.print_stats('users', data["user_reviews"], [25, 50, 75, 90])
+    stats.latex_table_m(data["critic_reviews"],data["user_reviews"])
+    stats.plot(data["critic_reviews"], 200, 
+        title = "Cumulative Histogram of Critic Reviews per Movie",
+        xlabel = "Number of Reviews",
+        ylabel = "Cdf of Reviews per Movie",
+        fname = "reports/plot_m_mov_top.png")
+    stats.plot(data["user_reviews"], 200, 
+        title = "Cumulative Histogram of User Reviews per Movie",
+        xlabel = "Number of Reviews",
+        ylabel = "Cdf of Reviews per Movie",
+        fname = "reports/plot_m_mov_usr.png")
 
 def user_critic_stats():
     critics, ccounts = zip(*reviews_per_critic())
-    stats.print_stats('critics', ccounts, [25, 50, 75, 90])
+
+    #stats.print_stats('critics', ccounts, [25, 50, 75, 90])
     users, ucounts = zip(*reviews_per_user())
-    stats.print_stats('users', ucounts, [25, 50, 75, 90])
+    #stats.print_stats('users', ucounts, [25, 50, 75, 90])
+    stats.latex_table_m(ccounts,ucounts)
+    stats.plot(ccounts, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per Critic",
+        xlabel = "Number of Critics",
+        ylabel = "Cdf of Movies per Critic",
+        fname = "reports/plot_m_crit_top.png")
+    stats.plot(ucounts, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per User",
+        xlabel = "Number of Users",
+        ylabel = "Cdf of Movies per User",
+        fname = "reports/plot_m_crit_usr.png")
 
 print("Movie stats")
 movie_stats()

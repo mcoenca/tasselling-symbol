@@ -82,8 +82,19 @@ def reviews_per_publication():
 
 def reviews_stats():
     results = stats.get_or_compute('reviews_list.json', reviews_per_movie)
-    stats.print_stats("top", results["tops"], [25, 50, 75])
-    stats.print_stats("other", results["others"], [25, 50, 75])
+    #stats.print_stats("top", results["tops"], [25, 50, 75])
+    #stats.print_stats("other", results["others"], [25, 50, 75])
+    stats.latex_table_r(results["tops"],results["others"])
+    stats.plot(results["tops"], 200, 
+        title = "Cumulative Histogram of Top Critic Reviews per Movie",
+        xlabel = "Number of Reviews",
+        ylabel = "Cdf of Reviews per Movie",
+        fname = "reports/plot_r_mov_top.png")
+    stats.plot(results["others"], 200, 
+        title = "Cumulative Histogram of Other Critic Reviews per Movie",
+        xlabel = "Number of Reviews",
+        ylabel = "Cdf of Reviews per Movie",
+        fname = "reports/plot_r_mov_oth.png")
 
 
 def critics_stats():
@@ -91,18 +102,40 @@ def critics_stats():
     # the second is really unsurprising
     data = stats.get_or_compute('critics_list.json', reviews_per_critic)
     names, top, other, total = zip(*(data[1:]))
-    stats.print_stats("top", top, [50, 80, 90, 99])
-    stats.print_stats("other", other, [50, 80, 90, 99])
-    stats.print_stats("total", total, [50, 80, 90, 99])
+    #stats.print_stats("top", top, [50, 80, 90, 99])
+    #stats.print_stats("other", other, [50, 80, 90, 99])
+    #stats.print_stats("total", total, [50, 80, 90, 99])
+    stats.latex_table_r(top,other,total=total)
+    stats.plot(top, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per Top Critic",
+        xlabel = "Number of Critics",
+        ylabel = "Cdf of Movies per Critic",
+        fname = "reports/plot_r_crit_top.png")
+    stats.plot(other, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per Other Critic",
+        xlabel = "Number of Critics",
+        ylabel = "Cdf of Movies per Critic",
+        fname = "reports/plot_r_crit_oth.png")
 
 
 def publications_stats():
     data = stats.get_or_compute(
         'publications_list.json', reviews_per_publication)
     names, top, other, total = zip(*(data[1:]))
-    stats.print_stats("top", top, [50, 80, 90, 99])
-    stats.print_stats("other", other, [50, 80, 90, 99])
-    stats.print_stats("total", total, [50, 80, 90, 99])
+    #stats.print_stats("top", top, [50, 80, 90, 99])
+    #stats.print_stats("other", other, [50, 80, 90, 99])
+    #stats.print_stats("total", total, [50, 80, 90, 99])
+    stats.latex_table_r(top,other,total=total)
+    stats.plot(top, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per Top Publication",
+        xlabel = "Number of Publication",
+        ylabel = "Cdf of Movies per Publication",
+        fname = "reports/plot_r_pub_top.png")
+    stats.plot(other, 200, 
+        title = "Cumulative Histogram of Movies Reviewed per Other Publication",
+        xlabel = "Number of Publication",
+        ylabel = "Cdf of Movies per Publication",
+        fname = "reports/plot_r_pub_oth.png")
 
 print("Movie stats")
 reviews_stats()
