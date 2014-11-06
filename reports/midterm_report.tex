@@ -44,7 +44,11 @@
 
 \section{Obtaining the data}
 
+	We found two sites public API where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
 
+	To solve this problem we obtained a list of the most rated films from IMBD. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
+
+	We then used the Metacritic and Rotten Tomatoes APIs to retrieve information, reviews, and anything else that was available for each of these movies.
 
 \section{Data descriptions}
 
@@ -52,6 +56,11 @@
 
 	The data we retrieved from Rotten tomatoes included approximately five hundred thousand reviews by about four thousand unique critics about four thousand movies.
 
+	The Rotten Tomatoes data is very promising. Movies are reviewed by on average about twenty critics which are designated as \textit{top critics}, and by about one hundred critics with no top designation. Furthermore, these distributions are fairly uniform as shown by the Histogram in Figure \ref{fig:r_mov}. This means that we have a large number of movies with many critic reviews.
+
+	Critics have, on average about twenty reviews where they are designated as \textit{top critics}, and about seventy where they receive no designation. This might seem surprising as we would expect top critics to review more things. Really this reflects an interesting naming convention by Rotten Tomatoes. Though a critic may be designated as a \textit{top critic} for a particular movie, this designation may change from movie to movie. One notable exception is Rodger Ebert who was designated as a top critic for $2862$ movies! These distributions are more skewed by critics, like Ebert, who have reviewed many movies as seen in Figure \ref{fig:r_crit}. However, there are still many critics who have reviewed a sizable number of films.
+
+	Rotten Tomatoes differentiates between individual critics and the publication which they write for. If we look at the same things we looked at for critics, but group them by publication, we find a higher mean number of films reviewed. This could be useful as publications, like critics, may maintain a distinct taste profile.
 
 	\begin{table}[H]
 	 \centering
@@ -71,7 +80,7 @@
 	    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_top.png}
 	    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_oth.png}
 	    \caption{INSERT TITLE}
-	    \label{fig:r_mov}
+	    \label{fig:r_mov} 
 	\end{figure}
 
 
@@ -120,16 +129,16 @@
 
 \subsection{Metacritic}
 
-	The Metacritic dataset contains $3228$ movies with $152622$ reviews from $69$ unique critics and $20,183$ unique users. Of these reviews $80332$ were written by users, and $69590$ were written by critics
+	The Metacritic dataset contains $3228$ movies with $152622$ reviews from $69$ unique critics and $20183$ unique users. Of these reviews $80332$ were written by users, and $69590$ were written by critics
 
 
-	Films were somewhat harder to retrieve from Metacritic than Rotten Tomatoes. The indexing in the Metacritic search function seemed to rely mostly on attributes other than title, as a result, many queries resulted in the wrong movie. For instance when searching for \textit{Batman Begins} we instead received \textit{The Dark Knight}. This is most likely due to \textit{Batman} being very closely related to \textit{The Dark Knight}, and the film \textit{Batman Begins} being significantly less popular. Due to problems like this we were only able to retrieve $3200$ of the $5000$ films we searched for. 
+	Films were somewhat harder to retrieve from Metacritic than Rotten Tomatoes. The indexing in the Metacritic search function seemed to rely mostly on attributes other than title, as a result, many queries resulted in the wrong movie. For instance when searching for \textit{Batman Begins} we instead received \textit{The Dark Knight}. This is most likely due to \textit{Batman} being very closely related to \textit{The Dark Knight}, and the film \textit{Batman Begins} being significantly less popular. Due to problems like this we were unable to retrieve as many films as with Rotten Tomatoes.
 
-	In contrast to rotten tomatoes, Metacritic draws from a very small pool of critics. This is partially because what Metacritic describes as \textit{critics} Rotten Tomatoes describes as \textit{publications}. On average each of these critics has reviewed $1200$ films. This means that for each critic we have a fairly large overlap.
+	In contrast to rotten tomatoes, Metacritic draws from a very small pool of critics. This is partially because what Metacritic describes as \textit{critics} Rotten Tomatoes describes as \textit{publications}. On average each of these critics has reviewed twelve hundred films. This means that for each critic we have a fairly large overlap.
 
-	The films also have about 21 user reviews on average. This provides us with real user data which is something which we did not obtain from Rotten Tomatoes. Approximately twenty percent of movies have at least twenty user reviews, giving us a reasonable number of movies with reviews.
+	The films also have about twenty one user reviews on average. This provides us with real user data which is something which we did not obtain from Rotten Tomatoes. As seen in Figure \ref{fig:m_crit}, Approximately twenty percent of movies have at least twenty user reviews, giving us a reasonable number of movies with reviews.
 
-	Unfortunately, there are very few users who review many movies. From figure \ref{fig:m_crit} we can see that reviewing more than twenty films occurs at approximately the ninety-eighth percentile, giving us about forty users.
+	Unfortunately, there are very few users who review many movies. From Figure \ref{fig:m_crit} we can see that reviewing more than twenty films occurs at approximately the ninety-eighth percentile, giving us about forty users.
 
 	\begin{table}[H]
 	 \centering
