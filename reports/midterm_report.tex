@@ -42,7 +42,6 @@
 
 \section{Introduction}
 
-
 \section{Obtaining the data}
 
 
@@ -121,10 +120,20 @@
 
 \subsection{Metacritic}
 
+	The Metacritic dataset contains $3228$ movies with $152622$ reviews from $69$ unique critics and $20,183$ unique users. Of these reviews $80332$ were written by users, and $69590$ were written by critics
+
+
+	Films were somewhat harder to retrieve from Metacritic than Rotten Tomatoes. The indexing in the Metacritic search function seemed to rely mostly on attributes other than title, as a result, many queries resulted in the wrong movie. For instance when searching for \textit{Batman Begins} we instead received \textit{The Dark Knight}. This is most likely due to \textit{Batman} being very closely related to \textit{The Dark Knight}, and the film \textit{Batman Begins} being significantly less popular. Due to problems like this we were only able to retrieve $3200$ of the $5000$ films we searched for. 
+
+	In contrast to rotten tomatoes, Metacritic draws from a very small pool of critics. This is partially because what Metacritic describes as \textit{critics} Rotten Tomatoes describes as \textit{publications}. On average each of these critics has reviewed $1200$ films. This means that for each critic we have a fairly large overlap.
+
+	The films also have about 21 user reviews on average. This provides us with real user data which is something which we did not obtain from Rotten Tomatoes. Approximately twenty percent of movies have at least twenty user reviews, giving us a reasonable number of movies with reviews.
+
+	Unfortunately, there are very few users who review many movies. From figure \ref{fig:m_crit} we can see that reviewing more than twenty films occurs at approximately the ninety-eighth percentile, giving us about forty users.
 
 	\begin{table}[H]
 	 \centering
-	 \caption{Distribution of number of reviews by users and critics for movies on metacritic}
+	 \caption{Distribution of number of reviews by users and critics for movies on Metacritic}
 
 	 \begin{tabular}{ l | c | c | c | c }
 	 \hline 
@@ -140,14 +149,14 @@
 	    \centering
 	    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_top.png}
 	    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_usr.png}
-	    \caption{INSERT TITLE}
+	    \caption{Cumulative histograms of critic and user reviews per movie for movies on Metacritic}
 	    \label{fig:m_mov}
 	\end{figure}
 
 
 	\begin{table}[H]
 	\centering
-	 \caption{Distribution of number of reviewed movies by users and critics on metacritic}
+	 \caption{Distribution of number of reviewed movies by users and critics on Metacritic}
 
 	 \begin{tabular}{ l | c | c | c | c }
 	 \hline
@@ -164,11 +173,14 @@
 	    \centering
 	    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_top.png}
 	    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_usr.png}
-	    \caption{INSERT TITLE}
+	    \caption{Cumulative histograms }
 	    \label{fig:m_crit}
 	\end{figure}
 
 \section{Matrix factorization}
+
+	As our baseline approach we used stochastic matrix factorization. 
+
 
 	\begin{figure}[H]
 	\centering
@@ -176,7 +188,7 @@
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l1.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l3.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l10.png}
-	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stocastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
+	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
 	\label{fig:1}
 	\end{figure}
 
@@ -187,7 +199,7 @@
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l1.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l3.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l10.png}
-	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stocastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
+	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
 	\label{fig:10}
 	\end{figure}
 
@@ -198,7 +210,7 @@
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l1.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l3.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l10.png}
-	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stocastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
+	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
 	\label{fig:25}
 	\end{figure}
 
@@ -209,7 +221,7 @@
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l1.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l3.png}
 	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l10.png}
-	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stocastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
+	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
 	\label{fig:40}
 	\end{figure}
 
