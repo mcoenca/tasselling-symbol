@@ -46,7 +46,7 @@
 
 	We found two sites public API where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
 
-	To solve this problem we obtained a list of the most rated films from IMBD. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
+	To solve this problem we obtained a list of the most rated films from IMDb. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
 
 	We then used the Metacritic and Rotten Tomatoes APIs to retrieve information, reviews, and anything else that was available for each of these movies.
 
@@ -262,9 +262,15 @@ Calculating the gradient of this sum of $NM$ terms in turn requires the calculat
 	\end{figure}
 
 
-
 \section{Further work}
 
+There are currently three big axes in which we want to extend our work.
+
+The first axis is to extend our pure content-based system with collaborative elements, thus building a hybrid system. We have started work in that direction, by directly calculating a measure of similarity between critics based on ratings. The current implementation uses a cosine similarity measure between critic rating vectors, but it was not ready for this report. We plan on trying a correlation-based similarity measure and an adjusted cosine similarity measure, as described by Sarwar et al. in \cite{Sarwar01}.
+
+The second extension would be to extract more features from data we already have (review publication, movie director, cast, runtime, MPAA rating, etc.) and integrate them in our matrix factorization model. Adding these fixed features to the feature matrices would probably allow us to more accurately learn the remaining features and therefore enable us to learn a better measure of critic similarity.
+
+The third extension would be to do text analysis on reviews in order to extract critic features (vocabulary, length of reviews, \dots) and movie features (we could learn the movie genre, what emotions it evokes, \dots). This would probably require a significant amount of work, as sentiment analysis is another entire field of machine learning.
 
 \bibliography{bibliography}{}
 \bibliographystyle{plain}
