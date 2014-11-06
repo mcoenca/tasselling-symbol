@@ -1,9 +1,9 @@
-% You should title the file with a .tex extension (hw1.tex, for example)
 \documentclass[12pt]{article}
-
 	\usepackage{amsmath}
 	\usepackage{amssymb}
 	\usepackage{fancyhdr}
+	\usepackage{float}
+	\usepackage{graphicx}
 
 	\oddsidemargin0cm
 	\topmargin-2cm     %I recommend adding these three lines to increase the 
@@ -44,58 +44,134 @@
 
 \section{Data descriptions}
 
+\subsection{Rotten tomatoes}
+
+The data we retrieved from Rotten tomatoes included approximately five hundred thousand reviews by about four thousand unique critics about four thousand movies.
+
 Movie stats
 loaded data from file
-top :: count: 4538 min: 0 max: 56
-top :: mean: 22.41 stdev: 16.06
-top :: 25'th percentile : 7.00
-top :: 50'th percentile : 21.00
-top :: 75'th percentile : 37.00
-other :: count: 4538 min: 0 max: 316
-other :: mean: 92.24 stdev: 68.12
-other :: 25'th percentile : 35.00
-other :: 50'th percentile : 76.00
-other :: 75'th percentile : 146.00
+\begin{table}[H]
+ \centering
+ INSERT TITLE \\
+ \begin{tabular}{| l | c | c | c | c |}
+ \hline
+ &  Min & Max & Mean & Std Dev  \\
+ \hline
+ Top Critcs & 0 & 56 & 22.41 & 16.06 \\
+ Other Critics & 0 & 316 & 92.24 & 68.12 \\
+ \hline
+ \end{tabular}
+ \end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_top.png}
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_oth.png}
+    \caption{INSERT TITLE}
+    \label{fig:r_mov}
+\end{figure}
+
+
 Critic stats
 loaded data from file
-top :: count: 4474 min: 0 max: 2862
-top :: mean: 21.79 stdev: 124.96
-top :: 50'th percentile : 0.00
-top :: 80'th percentile : 2.00
-top :: 90'th percentile : 10.00
-top :: 99'th percentile : 663.00
-other :: count: 4474 min: 0 max: 2634
-other :: mean: 68.16 stdev: 224.77
-other :: 50'th percentile : 2.00
-other :: 80'th percentile : 36.00
-other :: 90'th percentile : 160.70
-other :: 99'th percentile : 1227.51
-total :: count: 4474 min: 0 max: 2862
-total :: mean: 89.96 stdev: 254.56
-total :: 50'th percentile : 5.00
-total :: 80'th percentile : 66.00
-total :: 90'th percentile : 234.70
-total :: 99'th percentile : 1312.89
+\begin{table}[H]
+ \centering
+ INSERT TITLE \\
+ \begin{tabular}{| l | c | c | c | c |}
+ \hline
+ &  Min & Max & Mean & Std Dev  \\
+ \hline
+ Top Critcs & 0 & 2862 & 21.79 & 124.96 \\
+ Other Critics & 0 & 2634 & 68.16 & 224.77 \\
+ \hline
+ \end{tabular}
+ \end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_crit_top.png}
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_crit_oth.png}
+    \caption{INSERT TITLE}
+    \label{fig:r_crit}
+\end{figure}
+
+
+
 Publication stats
 loaded data from file
-top :: count: 1046 min: 0 max: 4135
-top :: mean: 97.22 stdev: 454.15
-top :: 50'th percentile : 0.00
-top :: 80'th percentile : 0.00
-top :: 90'th percentile : 0.00
-top :: 99'th percentile : 2378.75
-other :: count: 1046 min: 0 max: 3224
-other :: mean: 297.78 stdev: 520.28
-other :: 50'th percentile : 70.00
-other :: 80'th percentile : 474.00
-other :: 90'th percentile : 885.00
-other :: 99'th percentile : 2523.55
-total :: count: 1046 min: 0 max: 4135
-total :: mean: 395.00 stdev: 648.27
-total :: 50'th percentile : 107.00
-total :: 80'th percentile : 601.00
-total :: 90'th percentile : 1229.50
-total :: 99'th percentile : 2993.75
+\begin{table}[H]
+ \centering
+ INSERT TITLE \\
+ \begin{tabular}{| l | c | c | c | c |}
+ \hline
+ &  Min & Max & Mean & Std Dev  \\
+ \hline
+ Top Publications & 0 & 4135 & 97.22 & 454.15 \\
+ Other Publications & 0 & 3224 & 297.78 & 520.28 \\
+ \hline
+ \end{tabular}
+ \end{table}
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_pub_top.png}
+    \includegraphics[width=0.48\textwidth]{plots/plot_r_pub_oth.png}
+    \caption{INSERT TITLE}
+    \label{fig:r_pub}
+\end{figure}
+
+
+
+
+\subsection{Metacritic}
+
+Movie stats
+\begin{table}[H]
+ \centering
+ INSERT TITLE \\
+ \begin{tabular}{| l | c | c | c | c |}
+ \hline
+ &  Min & Max & Mean & Std Dev  \\
+ \hline
+ Critics & 0 & 49 & 25.72 & 10.83 \\
+ Users & 0 & 842 & 21.56 & 50.05 \\
+ \hline
+ \end{tabular}
+ \end{table}
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_top.png}
+    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_usr.png}
+    \caption{INSERT TITLE}
+    \label{fig:m_mov}
+\end{figure}
+
+
+
+User and critic stats
+\begin{table}[H]
+ \centering
+ INSERT TITLE \\
+ \begin{tabular}{| l | c | c | c | c |}
+ \hline
+ &  Min & Max & Mean & Std Dev  \\
+ \hline
+ Critics & 56 & 3445 & 1203.36 & 912.50 \\
+ Users & 1 & 536 & 3.45 & 14.55 \\
+ \hline
+ \end{tabular}
+ \end{table}
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_top.png}
+    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_usr.png}
+    \caption{INSERT TITLE}
+    \label{fig:m_crit}
+\end{figure}
+
+
 
 \section{Matrix factorization}
 
