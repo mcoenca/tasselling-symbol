@@ -4,6 +4,7 @@
 	\usepackage{fancyhdr}
 	\usepackage{float}
 	\usepackage{graphicx}
+	\usepackage{cite}
 
 	\oddsidemargin0cm
 	\topmargin-2cm     %I recommend adding these three lines to increase the 
@@ -21,9 +22,9 @@
 	\setlength{\parskip}{5pt plus 1pt}
 	 
 	\pagestyle{fancyplain}
-	\lhead{\fancyplain{}{\textbf{HW\myhwnum}}}      % Note the different brackets!
+	\lhead{\fancyplain{}{\textbf{Midway report}}}      % Note the different brackets!
 	\rhead{\fancyplain{}{\myname\\ \myandrew}}
-	\chead{\fancyplain{}{15-451 }}
+	\chead{\fancyplain{}{10-701}}
 \begin{document}
 %Title
 	\medskip    
@@ -31,7 +32,7 @@
 	\begin{center}                 
 	{\LARGE Finding The Best Critic For You} \\
 	\medskip
-	Machine Learning Midterm Report \\
+	Machine Learning Midway Report \\
 	\smallskip
 	\myname \\
 	\myandrew \\
@@ -43,6 +44,8 @@
 
 
 \section{Obtaining the data}
+
+
 
 \section{Data descriptions}
 
@@ -212,7 +215,30 @@
 
 
 \section{Recommender Systems}
-    
+
+What we are trying to do here is to recommend a critic to a user based on past
+critic ratings and past user ratings. In other words, we are trying to build
+a recommender system.
+
+Formally, a recommender system takes a set of users $U = \{u_1, ..., u_N\}$, a
+set of items $I = \{i_1, ..., i_M\}$, and a sparse matrix of ratings
+$R$ of size $N \times M$. If $R_{k,l} > 0$, then user $u_k$ has given item $i_l$ a rating of $R_{k,l}$. A zero rating signifies that the
+user has not rated the item. The goal of the system is then to predict the rating that a user would give to an item he has not yet rated. The system can
+then recommend any number of items with highest predicted rating.
+
+As described in \cite{Survey05}, recommender systems can be divided in three broad categories: content-based systems, collaborative systems and hybrid systems. 
+
+Content-based recommender systems try to identify item features in order to compare items and recommend similar items to those that the user has rated highly in the past.  For example, if a user consistently rates history books highly, the system can recommend other history books.
+
+Collaborative recommender systems do not try to extract features from the items
+to be recommended. Instead, such systems will recommend items that users with similar tastes have rated highly in the past.
+
+Hybrid recommender systems try to combine both approaches in order to improve recommendations.
+
 \section{Further work}
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
 
 \end{document}
