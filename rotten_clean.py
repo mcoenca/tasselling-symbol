@@ -103,15 +103,15 @@ def process_scores():
             score = parse_original_score(
                 review.original_score,
                 review.is_fresh)
+            #if score == 0:
+            #    print("Zero score {}".format(review.original_score))
         except Exception:
             #traceback.print_exc()
-            print(review.original_score)
-            score = -1
-
-        if review.is_fresh:
-            score = 75
-        else:
-            score = 25
+            print("Could not parse score {}".format(review.original_score))
+            if review.is_fresh:
+                score = 75
+            else:
+                score = 25
 
         review.score = score
         review.save()
@@ -150,7 +150,8 @@ def remove_duplicate_reviews():
 
 def main():
     with db.transaction():
-        remove_duplicate_reviews()
+        #remove_duplicate_reviews()
+        process_scores()
 
 if __name__ == '__main__':
     main()
