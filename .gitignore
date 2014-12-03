@@ -7,3 +7,4 @@ metacritic_api_key.py
 *.pyc
 *.db
 *.bak
+*.pickle
