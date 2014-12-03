@@ -67,7 +67,7 @@ def print_latex():
 
 def main(): 
     print_latex()
-    load_data("factor_results")
+    load_data("test")
 
 if __name__ == '__main__':
     main()

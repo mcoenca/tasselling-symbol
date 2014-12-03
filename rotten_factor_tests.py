@@ -73,5 +73,5 @@ def random_test():
         error +=  (value)**2
     print(error / len(ratings_train))
 
-random_test()
-#main()
+#random_test()
+main()
