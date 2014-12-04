@@ -31,6 +31,8 @@ class RottenLearn():
         normvec = np.maximum(np.sqrt(np.diag(simil)), 1)
         ret = np.divide(simil, normvec) # divide columns
         ret = np.divide(ret, normvec.reshape(-1,1)) # divide rows
+        for i in range(simil.shape[0]):
+            ret[i,i] = 0
         return ret
 
     def _calc_critic_sim_pearson(self):
@@ -48,7 +50,7 @@ class RottenLearn():
         return self_calc_normalized_dot_products(self.csr)
 
     def _calc_critic_sim(self):
-        if self.method == 'cos':
+        if self.method == 'cosine':
             return self._calc_critic_sim_cos()
         if self.method == 'pearson':
             return self._calc_critic_sim_pearson()
@@ -61,6 +63,7 @@ class RottenLearn():
         movie_ratings = self.csc[:, movie_id]
         nonzero = movie_ratings.nonzero()
         sim = self.critic_sim[critic_id, nonzero[0]]
+        sim[critic_id] = 0
         totsim = np.sum(sim)
 
         if totsim == 0:
@@ -74,7 +77,8 @@ class RottenLearn():
         ret = np.zeros((self.num_critics, self.num_movies))
 
         for movie_id in range(self.num_movies):
-            print("Estimating all ratings for movie {}".format(movie_id))
+            print("\rEstimating all ratings for movie {}".format(movie_id),
+                    end='')
             movie_ratings = self.csc[:, movie_id]
             nonzero = movie_ratings.nonzero()
             nnz = len(nonzero[0])
@@ -87,10 +91,10 @@ class RottenLearn():
                 if totsim == 0:
                     ret[critic_id, movie_id] = self.critic_means[critic_id]
                 else:
-                    ret[critic_id, movie_id] = np.sum(
-                            np.multiply(mrnz, sim)
-                            ) / totsim
+                    ret[critic_id, movie_id] = (np.sum(np.multiply(mrnz, sim))
+                        / totsim)
 
+        print()
         return ret
 
 def get_reviews():
@@ -121,16 +125,17 @@ def get_reviews():
     print("Found {} duplicate reviews".format(n_dup))
     return critics, movies, scores
 
-def calculate_estimates(filename):
+def calculate_estimates(filename, method):
     print("Getting reviews from database")
     critics, movies, scores = get_reviews()
     print("Calculating critic similarity")
-    learn = RottenLearn(critics, movies, scores, method="pearson")
+    learn = RottenLearn(critics, movies, scores, method=method)
     print("Estimating all ratings")
     estimates = learn.estimate_all_ratings()
     print("Dumping estimates to {}".format(filename))
     with open(filename, "wb") as f:
         pickle.dump(estimates, f)
+    print("It's all cool bro")
 
 def compare_estimates(filename):
     print("Getting reviews from database")
@@ -141,18 +146,20 @@ def compare_estimates(filename):
     print("Calculating error statistics")
     n = len(critics)
     errors = np.zeros(n)
+    n_absurd = 0
     for i in range(len(critics)):
         c = critics[i]
         m = movies[i]
         s = scores[i]
         e = estimates[c,m]
-        errors[i] = e - s
-        #print("critic:{} movie:{} score:{} estimate:{}".format(c, m, s, e))
+        errors[i] = abs(e - s)
+        if errors[i] > 100:
+            print("critic:{} movie:{} score:{} estimate:{}".format(c, m, s, e))
+            n_absurd += 1
     err_mean = errors.mean()
-    tmp = errors - err_mean
-    err_var = np.dot(tmp,tmp) / tmp.size
-    err_std = np.sqrt(err_var)
+    err_std = errors.std()
     print("Error stats: mean = {}  std dev = {}".format(err_mean, err_std))
+    print("Absurd estimates: {}".format(n_absurd))
 
 def main():
     parser = argparse.ArgumentParser(description='Collaborative filtering yo!')
@@ -160,10 +167,13 @@ def main():
             choices=["estimate", "compare"], help='Whatchu wanna do?')
     parser.add_argument('-f', metavar='FILE', default='collab.out',
             help='estimates file')
+    parser.add_argument('-m', metavar='METHOD',
+            choices=['pearson', 'cosine'], default='cosine',
+            help='collaborative filtering similarity measurement method')
 
     args = parser.parse_args()
     if args.command == 'estimate':
-        calculate_estimates(args.f)
+        calculate_estimates(args.f, args.m)
     elif args.command == 'compare':
         compare_estimates(args.f)
 
