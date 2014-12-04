@@ -10,6 +10,7 @@ import rotten_db as db
 import numpy as np
 from scipy import sparse
 from numpy import linalg
+import matplotlib.pyplot as plt
 
 #----------------------------------------------------------#
 # The class that actually performs collaborative filtering #
@@ -144,7 +145,8 @@ class RottenLearn():
 
         tmp = self.movie_reviews[movie_id][0, simidx]
         tmp = tmp - self.critic_means[reviewers][simidx, 0]
-        return np.sum(np.multiply(tmp, simsort)) / totsim
+        tmp = np.sum(np.multiply(tmp, simsort)) / totsim
+        return self.critic_means[critic_id] + tmp
 
     def estimate_all_ratings(self, k, est):
         for m in range(self.num_movies):
@@ -248,6 +250,124 @@ def compare_estimates(data, k):
     data["estimates"] = estimates
 
     print("All cool bro!") 
+    return err_mean, err_std
+
+#------------------------#
+# Generate pretty graphs #
+#------------------------#
+
+def graph_p(ps, n, k):
+    N = len(ps)
+    cos_err_means = np.zeros(N)
+    cos_err_stds  = np.zeros(N)
+    pea_err_means = np.zeros(N)
+    pea_err_stds  = np.zeros(N)
+
+    for i, p in enumerate(ps):
+        data = train("cosine", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        cos_err_means[i] = err_mean
+        cos_err_stds[i]  = err_std
+
+        data = train("pearson", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        pea_err_means[i] = err_mean
+        pea_err_stds[i]  = err_std
+
+    plt.figure()
+
+    plt.errorbar(ps, cos_err_means, yerr=cos_err_stds, fmt='-o', 
+            label='Cosine error mean')
+    plt.errorbar(ps, pea_err_means, yerr=pea_err_stds, fmt='-o',
+            label='Pearson error mean')
+
+    plt.xscale('log')
+    plt.ylabel("Test error (n = {}, k = {})".format(n,k))
+    plt.xlabel("p: proportion of total data used for training")
+    plt.title("Collaborative filtering test error depending on p")
+    plt.legend()
+    plt.savefig("graph_p.png", format="png", dpi=600)
+    plt.show()
+
+def graph_k(p, n, ks):
+    N = len(ks)
+    cos_err_means = np.zeros(N)
+    cos_err_stds  = np.zeros(N)
+    pea_err_means = np.zeros(N)
+    pea_err_stds  = np.zeros(N)
+
+    for i, k in enumerate(ks):
+        data = train("cosine", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        cos_err_means[i] = err_mean
+        cos_err_stds[i]  = err_std
+
+        data = train("pearson", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        pea_err_means[i] = err_mean
+        pea_err_stds[i]  = err_std
+
+    plt.figure()
+
+    plt.errorbar(ks, cos_err_means, yerr=cos_err_stds, fmt='-o',
+            label='Cosine error mean')
+    plt.errorbar(ks, pea_err_means, yerr=pea_err_stds, fmt='-o',
+            label='Pearson error mean')
+
+    plt.xscale('log')
+    plt.ylabel("Test error (n = {}, p = {})".format(n,p))
+    plt.xlabel("k: number of nearest neighbors used to estimate rating")
+    plt.title("Collaborative filtering test error depending on k")
+    plt.legend()
+    plt.savefig("graph_k.png", format="png", dpi=600)
+    plt.show()
+
+def graph_n(p, ns, k):
+    N = len(ns)
+    cos_err_means = np.zeros(N)
+    cos_err_stds  = np.zeros(N)
+    pea_err_means = np.zeros(N)
+    pea_err_stds  = np.zeros(N)
+
+    for i, n in enumerate(ns):
+        data = train("cosine", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        cos_err_means[i] = err_mean
+        cos_err_stds[i]  = err_std
+
+        data = train("pearson", p, n)
+        err_mean, err_std = compare_estimates(data, k)
+        pea_err_means[i] = err_mean
+        pea_err_stds[i]  = err_std
+
+    fig = plt.figure()
+
+    plt.errorbar(ns, cos_err_means, yerr=cos_err_stds, fmt='-o',
+            label='Cosine error mean')
+    plt.errorbar(ns, pea_err_means, yerr=pea_err_stds, fmt='-o',
+            label='Pearson error mean')
+
+    plt.xscale('log')
+    plt.ylabel("Test error (p = {}, k = {})".format(p,k))
+    plt.xlabel("n: minimum number of reviews per critic")
+    plt.title("Collaborative filtering test error depending on n")
+    plt.legend()
+    plt.savefig("graph_n.png", format="png", dpi=600)
+    plt.show()
+
+def graph(which=['p', 'n', 'k']):
+    ps = [0.00001, 0.0001, 0.001, 0.01, 0.1, 0.999]
+    ks = [1, 3, 9, 27, 81, 243, 729, 1000]
+    ns = [1, 10, 100, 1000]
+    p = 0.5
+    n = 1
+    k = 10
+    if 'p' in which:
+        graph_p(ps, n, k)
+    if 'n' in which:
+        graph_n(p, ns, k)
+    if 'k' in which:
+        graph_k(p, n, ks)
 
 #-------------------#
 # Actually do stuff #
@@ -255,6 +375,8 @@ def compare_estimates(data, k):
 
 def main():
     parser = argparse.ArgumentParser(description='Collaborative filtering yo!')
+    parser.add_argument('command', metavar='COMMAND',
+            choices=['compare', 'graph', 'graph_k', 'graph_p', 'graph_n'])
     parser.add_argument('-m', metavar='METHOD',
             choices=['pearson', 'cosine'], default='cosine',
             help='Similarity measurement method: cosine, pearson')
@@ -268,8 +390,17 @@ def main():
 
     args = parser.parse_args()
     
-    data = train(args.m, args.p, args.n)
-    compare_estimates(data, args.k)
+    if args.command == 'compare':
+        data = train(args.m, args.p, args.n)
+        compare_estimates(data, args.k)
+    elif args.command == 'graph':
+        graph()
+    elif args.command == 'graph_p':
+        graph(['p'])
+    elif args.command == 'graph_n':
+        graph(['n'])
+    elif args.command == 'graph_k':
+        graph(['k'])
 
 if __name__ == '__main__':
     main()
