@@ -112,27 +112,29 @@ class RottenLearn():
     def get_critic_similarity(self, i, j):
         return self.critic_sim[i,j]
 
-    def estimate_rating(self, critic_id, movie_id):
+    def estimate_rating(self, critic_id, movie_id, k):
         sim = self.critic_sim[critic_id, self.movie_reviewers[movie_id]]
-        totsim = np.sum(sim)
+        simidx = np.argsort(np.abs(sim))[0,-k:]
+        simsort = sim[0, simidx]
+        totsim = np.sum(np.abs(simsort))
 
         if totsim == 0:
             return self.critic_means[critic_id]
 
-        tmp = np.multiply(self.movie_reviews[movie_id], sim)
+        tmp = np.multiply(self.movie_reviews[movie_id][0, simidx], simsort)
         return np.sum(tmp) / totsim
 
-    def estimate_all_ratings(self, est):
+    def estimate_all_ratings(self, k, est):
         for m in range(self.num_movies):
             print("\rEstimating all ratings for movie {}".format(m), end='')
             for c in range(self.num_critics):
                 if estimates[c,m] != 0:
                     continue # already estimated
-                est[c,m] = self.estimate_rating(c,m)
+                est[c,m] = self.estimate_rating(c,m,k)
         print()
         return est
 
-    def compare_test_ratings(self, r_test):
+    def compare_test_ratings(self, r_test, k):
         c_test, m_test, s_test = self._unzip_review_tuples(r_test)         
         n = len(c_test)
         estimates = self.coo.todense()
@@ -143,7 +145,7 @@ class RottenLearn():
             c = c_test[i]
             m = m_test[i]
             s = s_test[i]
-            e = self.estimate_rating(c,m)
+            e = self.estimate_rating(c,m,k)
             estimates[c,m] = e
             errors[i] = abs(e-s)
 
@@ -209,7 +211,7 @@ def train(filename, method, p):
 # Calculate missing estimate reviews #
 #------------------------------------#
 
-def calculate_all_estimates(filename):
+def calculate_all_estimates(filename, k):
     print("Loading data from {}".format(filename))
     with open(filename, "rb") as f:
         data = pickle.load(f)
@@ -218,7 +220,7 @@ def calculate_all_estimates(filename):
     estimates = data["estimates"]
 
     print("Estimating all remaining ratings")
-    learn.estimate_all_ratings(estimates) 
+    learn.estimate_all_ratings(estimates, k) 
 
     print("Dumping data to {}".format(filename))
     with open(filename, "wb") as f:
@@ -230,7 +232,7 @@ def calculate_all_estimates(filename):
 # Compare estimates to observed values #
 #--------------------------------------#
 
-def compare_estimates(filename):
+def compare_estimates(filename, k):
     print("Loading data from {}".format(filename))
     with open(filename, "rb") as f:
         data = pickle.load(f)
@@ -239,7 +241,7 @@ def compare_estimates(filename):
     r_test = data["r_test"]
 
     print("Calculating error statistics")
-    err_mean, err_std, estimates = learn.compare_test_ratings(r_test)
+    err_mean, err_std, estimates = learn.compare_test_ratings(r_test, k)
     print("Error stats: mean = {}  std dev = {}".format(err_mean, err_std))
 
     data["estimates"] = estimates
@@ -266,14 +268,16 @@ def main():
             help='Similarity measurement method: cosine, pearson')
     parser.add_argument('-p', metavar='PROPORTION', type=float,
             help='Proportion of data to use as training samples')
+    parser.add_argument('-k', metavar='K', type=int, default=10,
+            help='Number of nearest neighbors to use for estimation')
 
     args = parser.parse_args()
     if args.command == 'train':
         train(args.f, args.m, args.p)
     if args.command == 'estimate':
-        calculate_all_estimates(args.f)
+        calculate_all_estimates(args.f, args.k)
     elif args.command == 'compare':
-        compare_estimates(args.f)
+        compare_estimates(args.f, args.k)
 
 if __name__ == '__main__':
     main()
