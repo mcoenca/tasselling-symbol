@@ -33,7 +33,7 @@ def plot(tr_x, tr_y, te_x, te_y, fname, lambda_val):
     plt.xlim((0,100))
     plt.ylim((0.0,1))
     plt.legend(['Training Error','Test Error'])
-    plt.savefig("{}.{}".format(fname.split('.')[0],"png"))
+    plt.savefig("{}.{}".format(fname.split('.')[0],"png"), dpi=400)
     plt.clf()
  
 def draw(data, filename):
@@ -67,7 +67,7 @@ def print_latex():
 
 def main(): 
     print_latex()
-    load_data("test")
+    load_data("factor_results")
 
 if __name__ == '__main__':
     main()
