@@ -4,6 +4,8 @@ import sys
 import pickle
 import argparse
 import random
+import peewee
+from os import path
 import rotten_db as db
 import numpy as np
 from scipy import sparse
@@ -17,7 +19,9 @@ class RottenLearn():
 
     def __init__(self, num_critics, num_movies, reviews, method='cos'):
 
-        self.method      = method
+        self.method = method
+        self._set_method_functions()
+
         self.num_critics = num_critics
         self.num_movies  = num_movies
 
@@ -30,6 +34,17 @@ class RottenLearn():
         self.critic_sim   = self._calc_critic_sim()
 
         self.movie_reviewers, self.movie_reviews = self._calc_movie_reviews()
+
+    def _set_method_functions(self):
+        if self.method == 'cosine':
+            self._calc_critic_sim = self._calc_critic_sim_cos
+            self.estimate_rating = self._estimate_rating_cos
+        elif self.method == 'pearson':
+            self._calc_critic_sim = self._calc_critic_sim_pearson
+            self.estimate_rating = self._estimate_rating_pearson
+        else:
+            raise ValueError("RottenLearn: unknown similarity method {}"
+                    .format(self.method))
 
     def _unzip_review_tuples(self, reviews):
         critics = []
@@ -102,17 +117,10 @@ class RottenLearn():
     def _calc_critic_sim_cos(self):
         return self._calc_normalized_dot_products(self.csr)
 
-    def _calc_critic_sim(self):
-        if self.method == 'cosine':
-            return self._calc_critic_sim_cos()
-        if self.method == 'pearson':
-            return self._calc_critic_sim_pearson()
-        raise ValueError('Unknown method ' + method)
-
     def get_critic_similarity(self, i, j):
         return self.critic_sim[i,j]
 
-    def estimate_rating(self, critic_id, movie_id, k):
+    def _estimate_rating_cos(self, critic_id, movie_id, k):
         sim = self.critic_sim[critic_id, self.movie_reviewers[movie_id]]
         simidx = np.argsort(np.abs(sim))[0,-k:]
         simsort = sim[0, simidx]
@@ -123,6 +131,20 @@ class RottenLearn():
 
         tmp = np.multiply(self.movie_reviews[movie_id][0, simidx], simsort)
         return np.sum(tmp) / totsim
+
+    def _estimate_rating_pearson(self, critic_id, movie_id, k):
+        reviewers = self.movie_reviewers[movie_id]
+        sim = self.critic_sim[critic_id, reviewers]
+        simidx = np.argsort(np.abs(sim))[0,-k:]
+        simsort = sim[0, simidx]
+        totsim = np.sum(np.abs(simsort))
+
+        if totsim == 0:
+            return self.critic_means[critic_id]
+
+        tmp = self.movie_reviews[movie_id][0, simidx]
+        tmp = tmp - self.critic_means[reviewers][simidx, 0]
+        return np.sum(np.multiply(tmp, simsort)) / totsim
 
     def estimate_all_ratings(self, k, est):
         for m in range(self.num_movies):
@@ -164,13 +186,20 @@ def shuffle_split(l, p):
     random.shuffle(l)
     return l[:m], l[m:]
 
-    
-def get_reviews(p):
+def get_best_critics(n):
+    return (db.Critic
+            .select(db.Critic.id)
+            .join(db.Review)
+            .group_by(db.Critic.id)
+            .having(peewee.fn.Count(db.Review.movie) >= n))
+
+def get_reviews(p, n):
     reviews = list(db.Review
         .select(
             db.Review.critic,
             db.Review.movie,
             db.Review.score)
+        .where(db.Review.critic << get_best_critics(n))
         .where(db.Review.is_top == False)
         .tuples())
 
@@ -185,13 +214,13 @@ def get_db_data_size():
 # Train the collaborative filtering model on part of the data #
 #-------------------------------------------------------------#
 
-def train(filename, method, p):
+def train(method, p, n):
     num_critics, num_movies = get_db_data_size()
 
     print("Getting reviews from database")
-    r_train, r_test = get_reviews(p)
+    r_train, r_test = get_reviews(p, n)
     
-    print("Calculating critic similarity")
+    print("Training model using {} reviews".format(len(r_train)))
     learn = RottenLearn(num_critics, num_movies, r_train, method=method)
 
     data = {
@@ -201,42 +230,14 @@ def train(filename, method, p):
         "estimates": sparse.coo_matrix((num_critics, num_movies))
     }
 
-    print("Dumping data to {}".format(filename))
-    with open(filename, "wb") as f:
-        pickle.dump(data, f)
-
     print("All done boss!")
-
-#------------------------------------#
-# Calculate missing estimate reviews #
-#------------------------------------#
-
-def calculate_all_estimates(filename, k):
-    print("Loading data from {}".format(filename))
-    with open(filename, "rb") as f:
-        data = pickle.load(f)
-
-    learn     = data["learn"]
-    estimates = data["estimates"]
-
-    print("Estimating all remaining ratings")
-    learn.estimate_all_ratings(estimates, k) 
-
-    print("Dumping data to {}".format(filename))
-    with open(filename, "wb") as f:
-        pickle.dump(data, f)
-
-    print("All cool bro!")
+    return data
 
 #--------------------------------------#
 # Compare estimates to observed values #
 #--------------------------------------#
 
-def compare_estimates(filename, k):
-    print("Loading data from {}".format(filename))
-    with open(filename, "rb") as f:
-        data = pickle.load(f)
-
+def compare_estimates(data, k):
     learn  = data["learn"]
     r_test = data["r_test"]
 
@@ -246,11 +247,7 @@ def compare_estimates(filename, k):
 
     data["estimates"] = estimates
 
-    print("Dumping data to {}".format(filename))
-    with open(filename, "wb") as f:
-        pickle.dump(data, f)
-
-    print("All finished pal!") 
+    print("All cool bro!") 
 
 #-------------------#
 # Actually do stuff #
@@ -258,11 +255,6 @@ def compare_estimates(filename, k):
 
 def main():
     parser = argparse.ArgumentParser(description='Collaborative filtering yo!')
-    parser.add_argument('command', metavar='COMMAND',
-            choices=["train", "estimate", "compare"],
-            help='Whatchu wanna do: train, estimate, compare')
-    parser.add_argument('-f', metavar='FILE', default='collab.pickle',
-            help='File to load data from and dump data to')
     parser.add_argument('-m', metavar='METHOD',
             choices=['pearson', 'cosine'], default='cosine',
             help='Similarity measurement method: cosine, pearson')
@@ -270,14 +262,14 @@ def main():
             help='Proportion of data to use as training samples')
     parser.add_argument('-k', metavar='K', type=int, default=10,
             help='Number of nearest neighbors to use for estimation')
+    parser.add_argument('-n', metavar='N', type=int, default=10,
+            help=
+            'Only consider reviewers which have reviewed more than N films')
 
     args = parser.parse_args()
-    if args.command == 'train':
-        train(args.f, args.m, args.p)
-    if args.command == 'estimate':
-        calculate_all_estimates(args.f, args.k)
-    elif args.command == 'compare':
-        compare_estimates(args.f, args.k)
+    
+    data = train(args.m, args.p, args.n)
+    compare_estimates(data, args.k)
 
 if __name__ == '__main__':
     main()
