@@ -9,3 +9,4 @@ metacritic_api_key.py
 *.bak
 *.pickle
 *.png
+*.ignore
