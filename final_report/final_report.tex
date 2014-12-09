@@ -5,6 +5,7 @@
 	\usepackage{float}
 	\usepackage{graphicx}
 	\usepackage{cite}
+	\usepackage{mathtools}
 
 	\oddsidemargin0cm
 	\topmargin-2cm     %I recommend adding these three lines to increase the 
@@ -17,6 +18,9 @@
 \newcommand{\problemnum}{1}
 \newcommand{\thedate}{\today}
 \DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\newcommand{\plotwidth}{0.34}
 %Page header
 	\setlength{\parindent}{0pt}
 	\setlength{\parskip}{5pt plus 1pt}
@@ -50,13 +54,7 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 
 hey
 
-\section{Obtaining the data}
 
-	We found two sites with public APIs where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
-
-	To solve this problem we obtained a list of the most rated films from IMDb. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
-
-	We then used the Metacritic and Rotten Tomatoes APIs to retrieve movie information, reviews, and anything else that was available for each of these movies.
 
 
 \section{Recommender Systems}
@@ -93,7 +91,60 @@ hey
 
 \section{Collaborative Filtering}
 
-\section{Data descriptions}
+
+we used a correlation-based similarity measure and an adjusted cosine similarity measure, as described by Sarwar et al. in \cite{Sarwar01}.
+
+Collaborative filtering is the following idea: if Alice always agrees with Bob and Bob has told us that he loves a certain film, then we can be reasonably sure that Alice will love that film too.
+
+We used two similarity measures between users which gave slightly different results: Pearson correlation coefficient and cosine similarity.
+
+
+
+
+
+
+Pearson
+
+\( r_{u,i} = \bar{r}_u + k \sum_{v \in U} \text{similarity}(u,v) (r_{v,i}-\bar{r}_v) \)
+
+Pearson Similarity
+
+\( \text{similarity}_{\text{pearson}}(u,v) = \frac{ (u - \bar{u}) \cdot (v - \bar{v})}{\norm{u - \bar{u}} \times \norm{v-\bar{v}}} \)
+
+Cosine
+
+\( r_{u,i} = k \sum_{v \in U} \text{similarity}(u,v) r_{v,i}  \)
+
+Cosine Similarity
+
+\( \text{similarity}_{\text{cosine}}(u,v) = \frac{u \cdot v}{\norm{u} \times \norm{v}} \)
+
+k
+
+\( k = 1 / \sum_{v \in U} \abs{\text{similarity(u,v)}} \)
+
+
+
+
+Collaborative filtering generally runs into two main problems:
+
+data sparsity : if some movies are insufficiently reviewed, they will be hard to recommend accurately. 
+We hypothesized that professional movie critics would have reviewed enough films for this not to be a problem.
+
+scalability : the algorithms take linear time in the number of users. In the case of large internet systems this can pose a problem.
+This does not affect us as we are limited to a small enough number of critics.
+
+
+
+\section{Experiments}
+
+\section{Obtaining the data}
+
+	We found two sites with public APIs where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
+
+	To solve this problem we obtained a list of the most rated films from IMDb. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
+
+	We then used the Metacritic and Rotten Tomatoes APIs to retrieve movie information, reviews, and anything else that was available for each of these movies.
 
 \subsection{Rotten Tomatoes}
 
@@ -149,86 +200,6 @@ hey
 	\end{figure}
 
 
-	\begin{table}[H]
-	 \centering
-	 \caption{Distribution of number of reviewed movies per publication on rotten tomatoes} 
-	 \begin{tabular}{ l | c | c | c | c }
-	 \hline
-	 &  Min & Max & Mean & Std Dev  \\
-	 \hline
-	 Top Publications & 0 & 4135 & 97.22 & 454.15 \\
-	 Other Publications & 0 & 3224 & 297.78 & 520.28 \\
-	 \hline
-	 \end{tabular}
-	 \end{table}
-
-	 \begin{figure}[H]
-	    \centering
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_pub_top.png}
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_pub_oth.png}
-	    \caption{Cumulative histograms of the number of movies reviewed by publications on Rotten Tomatoes}
-	    \label{fig:r_pub}
-	\end{figure}
-
-\subsection{Metacritic}
-
-	The Metacritic dataset contains $3228$ movies with $152622$ reviews from $69$ unique critics and $20183$ unique users. Of these reviews $80332$ were written by users, and $69590$ were written by critics
-
-
-	Films were somewhat harder to retrieve from Metacritic than Rotten Tomatoes. The indexing in the Metacritic search function seemed to rely mostly on attributes other than title, as a result, many queries resulted in the wrong movie. For instance when searching for \textit{Batman Begins} we instead received \textit{The Dark Knight}. This is most likely due to \textit{Batman} being very closely related to \textit{The Dark Knight}, and the film \textit{Batman Begins} being significantly less popular. Due to problems like this we were unable to retrieve as many films as with Rotten Tomatoes.
-
-	In contrast to Rotten Tomatoes, Metacritic draws from a very small pool of critics. This is partially because what Metacritic describes as \textit{critics} Rotten Tomatoes describes as \textit{publications}. On average each of these critics has reviewed twelve hundred films. This means that for each critic we have a fairly large overlap.
-
-	The films also have about twenty one user reviews on average. This provides us with real user data which is something which we did not obtain from Rotten Tomatoes. As seen in Figure \ref{fig:m_crit}, Approximately twenty percent of movies have at least twenty user reviews, giving us a reasonable number of movies with reviews.
-
-	Unfortunately, there are very few users who review many movies. From Figure \ref{fig:m_crit} we can see that reviewing more than twenty films occurs at approximately the ninety-eighth percentile, giving us about forty users.
-
-	\begin{table}[H]
-	 \centering
-	 \caption{Distribution of number of reviews by users and critics for movies on Metacritic}
-
-	 \begin{tabular}{ l | c | c | c | c }
-	 \hline 
-	 &  Min & Max & Mean & Std Dev  \\
-	 \hline
-	 Critics with reviews & 0 & 49 & 25.72 & 10.83 \\
-	 Users with reviews & 0 & 842 & 21.56 & 50.05 \\
-	 \hline
-	 \end{tabular}
-	 \end{table}
-
-	 \begin{figure}[H]
-	    \centering
-	    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_top.png}
-	    \includegraphics[width=0.48\textwidth]{plots/plot_m_mov_usr.png}
-	    \caption{Cumulative histograms of critic and user reviews per movie for movies on Metacritic}
-	    \label{fig:m_mov}
-	\end{figure}
-
-
-	\begin{table}[H]
-	\centering
-	 \caption{Distribution of number of reviewed movies by users and critics on Metacritic}
-
-	 \begin{tabular}{ l | c | c | c | c }
-	 \hline
-	 &  Min & Max & Mean & Std Dev  \\
-	 \hline
-	 Reviews per critic & 56 & 3445 & 1203.36 & 912.50 \\
-	 Reviews per user & 1 & 536 & 3.45 & 14.55 \\
-	 \hline
-	 \end{tabular}
-	 \end{table}
-
-
-	 \begin{figure}[H]
-	    \centering
-	    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_top.png}
-	    \includegraphics[width=0.48\textwidth]{plots/plot_m_crit_usr.png}
-	    \caption{Cumulative histograms of the number of movies reviewed by users and critics on Metacritic}
-	    \label{fig:m_crit}
-	\end{figure}
-
 
 \section{Matrix factorization results}
 
@@ -242,10 +213,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l0.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l1.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l3.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d1l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
 	\label{fig:1}
 	\end{figure}
@@ -253,10 +224,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l0.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l1.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l3.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d10l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
 	\label{fig:10}
 	\end{figure}
@@ -264,10 +235,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l0.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l1.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l3.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d25l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
 	\label{fig:25}
 	\end{figure}
@@ -275,20 +246,28 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l0.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l1.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l3.png}
-	\includegraphics[width=0.48\textwidth]{plots/test-i100d40l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
 	\label{fig:40}
 	\end{figure}
 
+\section{Collaborative Filtering Results}
+
+
+Collaborative filtering results
+
+Predicting critic ratings using collaborative filtering worked quite well. It confirmed that data sparsity can be overcome in the context of movies by relying on the extensive review history of movie critics.
+
+Indeed, using only 10\% of the reviews as training data we were able to reach a 17\% mean error (all movies are rated out of 100).
+
+We furthermore observed that restricting the training data to critics having written a large number of reviews did not have any significant effect on the mean error. Thus the system can be made more performant by ignoring at least half of the reviewers.
+
 
 \section{Further work}
 
-There are currently three big axes in which we want to extend our work.
-
-The first axis is to extend our pure content-based system with collaborative elements, thus building a hybrid system. We have started work in that direction, by directly calculating a measure of similarity between critics based on ratings. The current implementation uses a cosine similarity measure between critic rating vectors, but it was not ready for this report. We plan on trying a correlation-based similarity measure and an adjusted cosine similarity measure, as described by Sarwar et al. in \cite{Sarwar01}.
 
 The second extension would be to extract more features from data we already have (review publication, movie director, cast, runtime, MPAA rating, etc.) and integrate them in our matrix factorization model. Adding these fixed features to the feature matrices would allow us to more accurately learn the remaining features and therefore enable us to learn a better measure of critic similarity.
 
