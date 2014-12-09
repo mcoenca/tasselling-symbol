@@ -52,7 +52,22 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 
 \section{The Problem}
 
-hey
+Our goal is to find critics that are ``similar'' to users in some sense, such
+that users can rely on these critics' reviews in order to decide which movies
+they want to watch or not. Therefore the whole problem lies in finding a good
+similarity measure between users and critics.
+
+The twist is that there is no real data to test our algorithms on, as to our
+knowledge there exists no platform online where users can directly rate how
+much they agree with critics. This means that it is impossible to directly
+evaluate how good a similarity measure is, and we can only indirectly evaluate
+the performance of our algorithms.
+
+We chose to use our similarity measures to predict review scores and use that
+algorithm's performance as an indirect indicator of how well our similarity
+measures performs. The idea being that a good similarity measure would allow
+us to predict a user's movie ratings with some degree of accuracy, whereas an
+ineffective similarity measure would not specially outperform random guessing.
 
 
 
