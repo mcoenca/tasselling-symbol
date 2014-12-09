@@ -1,6 +1,5 @@
 !*.png
 *.aux
-*.bbl
 *latexmk
 *.log
 *.pdf

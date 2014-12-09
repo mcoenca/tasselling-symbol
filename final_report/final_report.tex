@@ -54,6 +54,41 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 
 	We then used the Metacritic and Rotten Tomatoes APIs to retrieve movie information, reviews, and anything else that was available for each of these movies.
 
+
+\section{Recommender Systems}
+
+	What we are trying to do for this project is to recommend a critic to a user based on past critic ratings and past user ratings. In other words, we are trying to build a recommender system.
+
+	Formally, a recommender system takes a set of users $U = \{u_1, ..., u_N\}$, a
+	set of items $I = \{i_1, ..., i_M\}$, and a sparse matrix of ratings
+	$R$ of size $N \times M$. If $R_{k,l} > 0$, then user $u_k$ has given item $i_l$ a rating of $R_{k,l}$. A zero rating signifies that the
+	user has not rated the item. The goal of the system is then to predict the rating that a user would give to an item he has not yet rated. The system can
+	then recommend any number of items with highest predicted rating.
+
+	As described in \cite{Survey05}, recommender systems can be divided in three broad categories: content-based systems, collaborative systems and hybrid systems. 
+
+	Content-based recommender systems try to identify item features in order to compare items and recommend similar items to those that the user has rated highly in the past.  For example, if a user consistently rates history books highly, the system can recommend other history books.
+
+	Collaborative recommender systems do not try to extract features from the items
+	to be recommended. Instead, such systems will recommend items that users with similar tastes have rated highly in the past.
+
+	Hybrid recommender systems try to combine both approaches in order to improve recommendations.
+
+	Our particular problem places a twist on the conventional recommendation problem, as we are not trying to recommend movies to users, but rather recommend critics to users. Movie ratings serve as an indirect measure of similarity that we want to use in order to provide good recommendations. Still, the main problem of overcoming rating sparsity remains a focal point.
+
+\section{Matrix factorization}
+
+	Our first approach was to try to learn movie features and critic features, as if we were training a content-based movie recommendation system. The idea was that using the learned critic features, we could then hope to easily compare critics by simply comparing their feature vectors, which would completely describe their tastes. By then learning user features with the same movie features, we could then hope to compare users' and critics' tastes, and therefore recommend critics to users. 
+
+	We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
+	$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (||U||_2^2 + ||I||_2^2) $$
+	Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
+
+	Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
+
+
+\section{Collaborative Filtering}
+
 \section{Data descriptions}
 
 \subsection{Rotten Tomatoes}
@@ -190,36 +225,8 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 	    \label{fig:m_crit}
 	\end{figure}
 
-\section{Recommender Systems}
 
-What we are trying to do for this project is to recommend a critic to a user based on past critic ratings and past user ratings. In other words, we are trying to build a recommender system.
-
-Formally, a recommender system takes a set of users $U = \{u_1, ..., u_N\}$, a
-set of items $I = \{i_1, ..., i_M\}$, and a sparse matrix of ratings
-$R$ of size $N \times M$. If $R_{k,l} > 0$, then user $u_k$ has given item $i_l$ a rating of $R_{k,l}$. A zero rating signifies that the
-user has not rated the item. The goal of the system is then to predict the rating that a user would give to an item he has not yet rated. The system can
-then recommend any number of items with highest predicted rating.
-
-As described in \cite{Survey05}, recommender systems can be divided in three broad categories: content-based systems, collaborative systems and hybrid systems. 
-
-Content-based recommender systems try to identify item features in order to compare items and recommend similar items to those that the user has rated highly in the past.  For example, if a user consistently rates history books highly, the system can recommend other history books.
-
-Collaborative recommender systems do not try to extract features from the items
-to be recommended. Instead, such systems will recommend items that users with similar tastes have rated highly in the past.
-
-Hybrid recommender systems try to combine both approaches in order to improve recommendations.
-
-Our particular problem places a twist on the conventional recommendation problem, as we are not trying to recommend movies to users, but rather recommend critics to users. Movie ratings serve as an indirect measure of similarity that we want to use in order to provide good recommendations. Still, the main problem of overcoming rating sparsity remains a focal point.
-
-\section{Matrix factorization}
-
-Our first approach was to try to learn movie features and critic features, as if we were training a content-based movie recommendation system. The idea was that using the learned critic features, we could then hope to easily compare critics by simply comparing their feature vectors, which would completely describe their tastes. By then learning user features with the same movie features, we could then hope to compare users' and critics' tastes, and therefore recommend critics to users. 
-
-We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
-$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (||U||_2^2 + ||I||_2^2) $$
-Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
-
-Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
+\section{Matrix factorization results}
 
 Figures 6-9 show some of the results we obtained with this technique. We first tried with only one dimension per user and critic $D=1$. As shown in Figure \ref{fig:1}, this produces quite unimpressive results. This model is far too simple to learn anything particularly interesting. All we can really learn here is how lenient critics are, and the average rating given to a movie.
 
