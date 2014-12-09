@@ -31,16 +31,21 @@ def get_or_compute(filename, function):
             json.dump(data, outfile)
     return data
 
-def plot(x, n_bins, title=None, xlabel=None, ylabel=None, fname=None):
+def plot(x, n_bins, title=None, xlabel=None, ylabel=None, fname=None, log=False):
   max_data = max(x)
-  plt.hist(x, n_bins, cumulative=True, normed=1)
+  if log:
+    plt.hist(x, bins=np.logspace(0, 3.2), cumulative=True, normed=1)
+    plt.semilogx()
+    plt.xlim((1,10**3.2))
+  else:
+    plt.hist(x, n_bins, cumulative=True, normed=1)
+    plt.xlim((0,max_data))
   plt.title(title)
   plt.xlabel(xlabel)
   plt.ylabel(ylabel)
-  plt.xlim((0,max_data))
   plt.ylim((0,1.01))
   #plt.show()
-  plt.savefig(fname)
+  plt.savefig(fname, dpi=400)
   plt.clf()
   #histtype='step', 
 
@@ -56,12 +61,12 @@ def latex_table_r(top, other, total=None):
     print(" &  Min & Max & Mean & Std Dev  \\\\")
     hline()
     print(" Top Critcs & {0} & {1} & {2:.2f} & {3:.2f} \\\\"\
-      .format(np.min(top),np.max(top),np.mean(top),np.std(top)))
+      .format(np.min(top),np.max(top),np.median(top),np.std(top)))
     print(" Other Critics & {0} & {1} & {2:.2f} & {3:.2f} \\\\"\
-      .format(np.min(other),np.max(other),np.mean(other),np.std(other)))
+      .format(np.min(other),np.max(other),np.median(other),np.std(other)))
     if total:
         print(" All Critics & {0} & {1} & {2:.2f} & {3:.2f} \\\\"\
-            .format(np.min(total),np.max(total),np.mean(total),np.std(total)))
+            .format(np.min(total),np.max(total),np.median(total),np.std(total)))
     hline()
     print(" \\end{tabular}")
     print(" \\end{table}")
@@ -75,9 +80,9 @@ def latex_table_m(top, other):
     print(" &  Min & Max & Mean & Std Dev  \\\\")
     hline()
     print(" Critics & {0} & {1} & {2:.2f} & {3:.2f} \\\\"\
-      .format(np.min(top),np.max(top),np.mean(top),np.std(top)))
+      .format(np.min(top),np.max(top),np.median(top),np.std(top)))
     print(" Users & {0} & {1} & {2:.2f} & {3:.2f} \\\\"\
-      .format(np.min(other),np.max(other),np.mean(other),np.std(other)))
+      .format(np.min(other),np.max(other),np.median(other),np.std(other)))
     hline()
     print(" \\end{tabular}")
     print(" \\end{table}")

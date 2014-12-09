@@ -85,12 +85,12 @@ def reviews_stats():
     #stats.print_stats("top", results["tops"], [25, 50, 75])
     #stats.print_stats("other", results["others"], [25, 50, 75])
     stats.latex_table_r(results["tops"],results["others"])
-    stats.plot(results["tops"], 200, 
+    stats.plot(results["tops"], 50, 
         title = "Cumulative Histogram of Top Critic Reviews per Movie",
         xlabel = "Number of Reviews",
         ylabel = "Cdf of Reviews per Movie",
         fname = "reports/plot_r_mov_top.png")
-    stats.plot(results["others"], 200, 
+    stats.plot(results["others"], 50, 
         title = "Cumulative Histogram of Other Critic Reviews per Movie",
         xlabel = "Number of Reviews",
         ylabel = "Cdf of Reviews per Movie",
@@ -106,16 +106,18 @@ def critics_stats():
     #stats.print_stats("other", other, [50, 80, 90, 99])
     #stats.print_stats("total", total, [50, 80, 90, 99])
     stats.latex_table_r(top,other,total=total)
-    stats.plot(top, 200, 
+    stats.plot(top, 50, 
         title = "Cumulative Histogram of Movies Reviewed per Top Critic",
         xlabel = "Number of Critics",
         ylabel = "Cdf of Movies per Critic",
-        fname = "reports/plot_r_crit_top.png")
-    stats.plot(other, 200, 
+        fname = "reports/plot_r_crit_top.png",
+        log = True)
+    stats.plot(other, 50, 
         title = "Cumulative Histogram of Movies Reviewed per Other Critic",
         xlabel = "Number of Critics",
         ylabel = "Cdf of Movies per Critic",
-        fname = "reports/plot_r_crit_oth.png")
+        fname = "reports/plot_r_crit_oth.png",
+        log = True)
 
 
 def publications_stats():

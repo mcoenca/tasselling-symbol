@@ -27,7 +27,7 @@ def extract(item):
 
 def plot(tr_x, tr_y, te_x, te_y, fname, lambda_val):
     plt.plot(tr_x, tr_y, 'ro', te_x, te_y, 'g^')
-    plt.title("Plot of Mean Squared Error vs. Iteration for Lambda = "+str(lambda_val))
+    plt.title("Plot of Mean Squared Error vs. Iteration")
     plt.xlabel("Iteration")
     plt.ylabel("Error")
     plt.xlim((0,100))
