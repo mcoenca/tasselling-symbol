@@ -1,0 +1,20 @@
+\begin{thebibliography}{1}
+
+\bibitem{Survey05}
+G.~Adomavicius and A.~Tuzhilin.
+\newblock Toward the next generation of recommender systems: a survey of the
+  state-of-the-art and possible extensions.
+\newblock {\em Knowledge and Data Engineering, IEEE Transactions on},
+  17(6):734--749, June 2005.
+
+\bibitem{Koren09}
+Yehuda Koren, Robert Bell, and Chris Volinsky.
+\newblock Matrix factorization techniques for recommender systems, 2009.
+
+\bibitem{Sarwar01}
+Badrul Sarwar, George Karypis, Joseph Konstan, and John Riedl.
+\newblock Item-based collaborative filtering recommendation algorithms.
+\newblock In {\em Proceedings of the 10th International Conference on World
+  Wide Web}, WWW '01, pages 285--295, New York, NY, USA, 2001. ACM.
+
+\end{thebibliography}
