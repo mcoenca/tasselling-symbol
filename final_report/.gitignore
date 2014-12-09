@@ -3,3 +3,4 @@
 *latexmk
 *.log
 *.pdf
+*.blg
