@@ -52,7 +52,9 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 
 \section{So, what seems to be the problem?}
 
-\subsection{Ay, there's the rub}
+\subsection{Ay, there's the rub} % For in that sleep of death, what dreams may
+                                 % come when we have shuffled off this mortal
+								 % coil must give us pause
 
 Our goal is to find critics that are ``similar'' to users in some sense, such
 that users can rely on these critics' reviews in order to decide which movies
@@ -111,13 +113,19 @@ sparsity remains a focal point.
 
 \section{Matrix factorization}
 
-	Our first approach was to try to learn movie features and critic features, as if we were training a content-based movie recommendation system. The idea was that using the learned critic features, we could then hope to easily compare critics by simply comparing their feature vectors, which would completely describe their tastes. By then learning user features with the same movie features, we could then hope to compare users' and critics' tastes, and therefore recommend critics to users. 
+Our first approach was to try to learn movie features and critic features, as if
+we were training a content-based movie recommendation system. The idea was that 
+using the learned critic features, we could then hope to easily compare critics 
+by simply comparing their feature vectors, which would completely describe 
+their tastes. By then learning user features with the same movie features, we 
+could then hope to compare users' and critics' tastes, and therefore recommend 
+critics to users. 
 
-	We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
-	$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (\norm{U}_2^2 + \norm{I}_2^2) $$
-	Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
+We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
+$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (\norm{U}_2^2 + \norm{I}_2^2) $$
+Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
 
-	Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
+Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
 
 
 \section{Collaborative Filtering}
@@ -128,9 +136,6 @@ we used a correlation-based similarity measure and an adjusted cosine similarity
 Collaborative filtering is the following idea: if Alice always agrees with Bob and Bob has told us that he loves a certain film, then we can be reasonably sure that Alice will love that film too.
 
 We used two similarity measures between users which gave slightly different results: Pearson correlation coefficient and cosine similarity.
-
-
-
 
 
 
@@ -171,9 +176,33 @@ This does not affect us as we are limited to a small enough number of critics.
 
 \section{Obtaining the data}
 
-We obtained a list of the five thousand most rated films from IMDb. We then used the Rotten Tomatoes API to retrieve movie information, reviews, and ratings for each of these movies. 
+We obtained a list of the five thousand most rated films from IMDb. We then 
+used the Rotten Tomatoes API to retrieve movie information, reviews, and 
+ratings for each of these movies.  
 
-Since the ratings were given in original form (some critics rated from A-F, some from 0-10, and others on more obscure scales), it was necessary to normalize the ratings.
+Since the ratings were given in original form (some critics rated from A-F, 
+some from 0-10, and others on more obscure scales), it was necessary to 
+normalize the ratings. We decided to use scores between 0 and 100, and converted
+accordingly. For fractional grades, we simply converted to percentages. For 
+alphabetical grades, we converted according to the following table:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ | l | c | l | c |}
+
+\hline
+Original Score & Converted Score & Original Score & Converted Score \\
+\hline
+A+ & 100 & A  & 100 \\
+A- & 100 & B+ & 100 \\
+B  & 100 & B- & 100 \\
+C+ & 100 & C  & 100 \\
+C- & 100 & D+ & 100 \\
+D  & 100 & D- & 100 \\
+F  & 100 &    &     \\
+\hline
+\end{tabular}
+\end{table}
 
 The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 movies by 4474 critics. Of all these reviews, 101492 were identified as top reviews, and these were written by 1343 unique critics.
 
