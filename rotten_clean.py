@@ -10,16 +10,18 @@ def frac_score(num, denom):
 
 def parse_letter_score_modifier(base_score, modifier):
     if modifier in ['+', 'plus']:
-        return base_score + 7
+        return base_score + 15
     if modifier in ['', '?']:
-        return base_score + 4
+        return base_score + 7
     if modifier in ['-', 'minus', '--', '=']:
         return base_score
     return None
 
 def parse_letter_score(letter, modifier):
     modifier = modifier.strip()
-    base_score = 90 - 10 * (ord(letter) - ord('A'))
+    base_score = 80 - 20 * (ord(letter) - ord('A'))
+    if letter == 'F':
+        base_score += 20
     return parse_letter_score_modifier(base_score, modifier)
 
 def parse_weird_outof4_4_score(score):
