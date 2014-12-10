@@ -36,7 +36,7 @@
 	\begin{center}                 
 	{\LARGE Finding The Best Critic For You} \\
 	\medskip
-	Machine Learning Final Report \\
+	Machine Learning 10-701 Final Report \\
 	\smallskip
 	\myname \\
 	\myandrew \\
@@ -143,36 +143,69 @@ Calculating the gradient of this sum of $NM$ terms in turn requires the calculat
 
 \section{Collaborative Filtering}
 
+In light of the poor results of matrix factorization, and in order to compare 
+approaches, we decided to switch from a content-based recommendation system to
+a collaborative recommendation system.
 
-we used a correlation-based similarity measure and an adjusted cosine similarity measure, as described by Sarwar et al. in \cite{Sarwar01}.
+The idea behind collaborative filtering is the following: if Alice always
+agrees with Bob and Bob has told us that he loves a certain film, then we can
+be reasonably sure that Alice will love that film too.
 
-Collaborative filtering is the following idea: if Alice always agrees with Bob and Bob has told us that he loves a certain film, then we can be reasonably sure that Alice will love that film too.
+Collaborative filtering is a natural fit for our problem, as it relies entirely
+on using the ratings matrix to derive a similarity measure between critics. It
+also goes one step further and estimates unknown ratings by calculating the
+average of other critics' ratings weighted by their similarity with the target
+critic. This gives us a similarity measure and an indirect measure of how well
+the similarity measure is performing.
 
-We used two similarity measures between users which gave slightly different results: Pearson correlation coefficient and cosine similarity.
+In our case, we used two different similarity measures, which gave slightly
+different results: a Pearson correlation-based similarity measure and an
+adjusted cosine similarity measure, as described by Sarwar et al. in
+\cite{Sarwar01}.
 
+Given two critic rating vectors $u,v$, the adjusted cosine similarity is given
+by the following formula:
 
+$$ \text{similarity}_{\text{cosine}}(u,v) = \frac{u \cdot v}{\norm{u} \times \norm{v}} $$
 
-Pearson
+It is important to note that the non-zero terms in the dot product sum
+correspond to the movies that both critics have reviewed. All other movies may
+be safely ignored in order to improve performance.
 
-\( r_{u,i} = \bar{r}_u + k \sum_{v \in U} \text{similarity}(u,v) (r_{v,i}-\bar{r}_v) \)
+This similarity measure gives us the following estimated rating for critic $u$,
+movie $i$:
 
-Pearson Similarity
+$$ r_{u,i} = K \sum_{v \in U_i} \text{similarity}(u,v) r_{v,i} $$
 
-\( \text{similarity}_{\text{pearson}}(u,v) = \frac{ (u - \bar{u}) \cdot (v - \bar{v})}{\norm{u - \bar{u}} \times \norm{v-\bar{v}}} \)
+The Pearson correlation-based similarity measure tries to account for the fact
+that different critics have different mean ratings. Indeed, critic $u$ rating a
+movie 60\% can be interpreted completely differently if her mean rating
+$\bar{u}$ is 50\% or if it is $70\%$. This results in the following formula:
 
-Cosine
+$$ \text{similarity}_{\text{pearson}}(u,v) = \frac{ (u - \bar{u}) \cdot (v - \bar{v})}{\norm{u - \bar{u}} \times \norm{v-\bar{v}}} $$
 
-\( r_{u,i} = k \sum_{v \in U} \text{similarity}(u,v) r_{v,i}  \)
+Here, the dot product notation is technically erroneous, as we only consider
+those terms in the sum corresponding to movies that both critics have rated.
+In other words, this notation corresponds to:
 
-Cosine Similarity
+$$
+(u - \bar{u}) \cdot (v - \bar{v}) = \sum_{i \in I_{u,v}} (u_i - \bar{u})(v_i - \bar{v})
+$$
+$$
+\text{where} \  I_{u,v} = \{ i \in I \  \text{s.t.} \   u_i \neq 0, v_i \neq 0 \}
+$$
 
-\( \text{similarity}_{\text{cosine}}(u,v) = \frac{u \cdot v}{\norm{u} \times \norm{v}} \)
+This similarity measure can then be used to estimate unknown ratings in the
+following manner:
 
-k
+$$ r_{u,i} = \bar{r}_u + K \sum_{v \in U_i} \text{similarity}(u,v) (r_{v,i}-\bar{r}_v) $$
 
-\( k = 1 / \sum_{v \in U} \abs{\text{similarity(u,v)}} \)
+In both cases, $K$ is simply the normalization factor for the weighted average:
 
+$$ \frac{1}{K} = \sum_{v \in U_i} \abs{\text{similarity(u,v)}} $$
 
+And $U_i$ is simply the set of critics that have reviewed movie $i$, i.e.
+$U_i = \{ v \in U \  \text{s.t.} \  v_i \neq 0 \}$.
 
 
 Collaborative filtering generally runs into two main problems:
