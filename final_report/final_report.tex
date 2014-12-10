@@ -58,7 +58,7 @@ Our work up to here has focused on obtaining meaningful data to perform machine 
 
 Our goal is to find critics that are ``similar'' to users in some sense, such
 that users can rely on these critics' reviews in order to decide which movies
-they want to watch or not. Therefore the whole problem lies in finding a good
+they want to watch or not. Therefore the problem lies in finding a good
 similarity measure between users and critics.
 
 The twist is that there is no real data to test our algorithms on, as to our
@@ -67,15 +67,27 @@ much they agree with critics. This means that it is impossible to directly
 evaluate how good a similarity measure is, and we can only indirectly evaluate
 the performance of our algorithms.
 
+In other words, it is necessary to indirectly define what it means for a
+similarity measure to be ``good'' in order devise algorithms to learn one. One
+cannot simply use a distance measure between critic rating vectors as a
+baseline for example as then that particular similarity measure would be the
+best possible, and there would be nothing to do or learn.
+
 We chose to use our similarity measures to predict review scores and use that
 algorithm's performance as an indirect indicator of how well our similarity
 measures performs. The idea being that a good similarity measure would allow
-us to predict a user's movie ratings with some degree of accuracy, whereas an
+us to predict a user's movie ratings with a good degree of accuracy, whereas an
 ineffective similarity measure would not specially outperform random guessing.
+
+In order to simplify the problem, we assumed that a good similarity measure
+between critics could be used to derive a good similarity measure
+between users and critics. Effectively, we assumed that critics behave much
+like users. Simply, they rate many more movies than average users and we have
+access to more information about them to use in our algorithms.
 
 \subsection{Recommender Systems}
 
-What we are trying to do for this project is to recommend a critic to a user
+Our goal is to recommend critics to a user
 based on past critic ratings and past user ratings. In machile learning terms,
 we are trying to build a recommender system.
 
@@ -106,7 +118,8 @@ recommendations.
 Our particular problem places a twist on the conventional recommendation
 problem, as we are not trying to recommend movies to users, but rather
 recommend critics to users. This is akin to recommending other users
-to a user, if critics are assumed to behave like standard users. Movie ratings
+to a user, given that critics are assumed to behave like standard users.
+Movie ratings
 serve as an indirect measure of similarity that we want to use in order to
 provide good recommendations. Still, the main problem of overcoming rating
 sparsity remains a focal point.
