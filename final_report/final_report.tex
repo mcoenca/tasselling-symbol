@@ -83,7 +83,7 @@ hey
 	Our first approach was to try to learn movie features and critic features, as if we were training a content-based movie recommendation system. The idea was that using the learned critic features, we could then hope to easily compare critics by simply comparing their feature vectors, which would completely describe their tastes. By then learning user features with the same movie features, we could then hope to compare users' and critics' tastes, and therefore recommend critics to users. 
 
 	We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
-	$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (||U||_2^2 + ||I||_2^2) $$
+	$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (\norm{U}_2^2 + \norm{I}_2^2) $$
 	Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
 
 	Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
@@ -140,6 +140,15 @@ This does not affect us as we are limited to a small enough number of critics.
 
 \section{Obtaining the data}
 
+We obtained a list of the five thousand most rated films from IMDb. We then used the Rotten Tomatoes API to retrieve movie information, reviews, and ratings for each of these movies. 
+
+Since the ratings were given in original form (some critics rated from A-F, some from 0-10, and others on more obscure scales), it was necessary to normalize the ratings.
+
+The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 movies by 4474 critics. Of all these reviews, 101492 were identified as top reviews, and these were written by 1343 unique critics.
+
+Overall, each movie was rated by a median of 97 critics, and each critic rated a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
+
+
 	We found two sites with public APIs where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
 
 	To solve this problem we obtained a list of the most rated films from IMDb. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
@@ -171,8 +180,8 @@ This does not affect us as we are limited to a small enough number of critics.
 
 	\begin{figure}[H]
 	    \centering
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_top.png}
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_mov_oth.png}
+	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_mov_top.png}
+	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_mov_oth.png}
 	    \caption{Cumulative histograms of critic reviews per movie for movies on Rotten Tomatoes}
 	    \label{fig:r_mov} 
 	\end{figure}
@@ -193,8 +202,8 @@ This does not affect us as we are limited to a small enough number of critics.
 
 	\begin{figure}[H]
 	    \centering
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_crit_top.png}
-	    \includegraphics[width=0.48\textwidth]{plots/plot_r_crit_oth.png}
+	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_crit_top.png}
+	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_crit_oth.png}
 	    \caption{Cumulative histograms of the number of movies reviewed by critics on Rotten Tomatoes}
 	    \label{fig:r_crit}
 	\end{figure}
@@ -213,10 +222,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d1l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
 	\label{fig:1}
 	\end{figure}
@@ -224,10 +233,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d10l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
 	\label{fig:10}
 	\end{figure}
@@ -235,10 +244,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d25l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
 	\label{fig:25}
 	\end{figure}
@@ -246,10 +255,10 @@ Since the data has mean zero and standard deviation one, the zero predictor, whi
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{plots/test-i100d40l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
 	\label{fig:40}
 	\end{figure}
