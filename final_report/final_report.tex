@@ -187,7 +187,7 @@ This does not affect us as we are limited to a small enough number of critics.
 
 \section{Experiments}
 
-\section{Obtaining the data}
+\section{Our Data}
 
 We obtained a list of the five thousand most rated films from IMDb. We then 
 used the Rotten Tomatoes API to retrieve movie information, reviews, and 
@@ -196,8 +196,11 @@ ratings for each of these movies.
 Since the ratings were given in original form (some critics rated from A-F, 
 some from 0-10, and others on more obscure scales), it was necessary to 
 normalize the ratings. We decided to use scores between 0 and 100, and converted
-accordingly. For fractional grades, we simply converted to percentages. For 
-alphabetical grades, we converted according to the following table:
+accordingly. For fractional grades, we simply converted to percentages. Our 
+conversions for alphabetical grades are shown in table \ref{tab:conv}. For some 
+data, the critics score was unavailable or uninterpretable (e.g. ``bomb'' or 
+``capsule''). In these cases, if the freshness score was available we gave the 
+film a rating based on the freshness.
 
 \begin{table}[H]
 \centering
@@ -214,87 +217,45 @@ C- & 100 & D+ & 100 \\
 D  & 100 & D- & 100 \\
 F  & 100 &    &     \\
 \hline
+Original Score & Converted Score & Original Score & Converted Score \\
+\hline
+Fresh & 75 & Not Fresh & 25 \\
+\hline
 \end{tabular}
+\label{tab:conv}
 \end{table}
 
-For some data, the critics score was unavailable or uninterpretable (e.g. 
-``bomb'' or ``capsule''). In these cases, if the freshness score was available
-we gave the film a rating based on the freshness score as follows:
+The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 
+movies by 4474 critics. Of all these reviews, 101492 were identified as top 
+reviews, and these were written by 1343 unique critics.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{| c | c | c |}
-\hline
- & Fresh & Not Fresh \\
-\hline
-Converted Score & 75 & 25 \\
-\hline
-\end{tabular}
-\end{table} 
+There is one important sematic to note here. Reviewers are marked as Top 
+Critics on a per movie basis. A reviewer may have reviewed many movies, but 
+only had the distinction of being marked as a Top Critic on a few of them. 
 
-The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 movies by 4474 critics. Of all these reviews, 101492 were identified as top reviews, and these were written by 1343 unique critics.
+We found that each moie was rated by an average of approximately 110 critics, 
+and that each critic rated an average of approximately 60 movies. 
+The distribution for critics is unsuprisingly highly skewed having a median 
+of only about 20. A more detailed of the distribution of reviewes by critic
+and movie can be seen in Figures \ref{fig:r_mov} and \ref{fig:r_crit}.
+Overall, each movie was rated by a median of 97 critics, and each critic rated 
+a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
 
-Overall, each movie was rated by a median of 97 critics, and each critic rated a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_mov_top.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_mov_oth.png}
+    \caption{Cumulative histograms of critic reviews per movie for movies on Rotten Tomatoes}
+    \label{fig:r_mov} 
+\end{figure}
 
-
-	We found two sites with public APIs where we could access movie information and reviews: Rotten Tomatoes and Metacritic. We wanted to find movies which many critics and users would likely have seen and rated. Unfortunately neither of these sites had a mechanism for retrieving the most reviewed films. 
-
-	To solve this problem we obtained a list of the most rated films from IMDb. We sorted this list by the number of ratings, and chose the five thousand most rated movies. 
-
-	We then used the Metacritic and Rotten Tomatoes APIs to retrieve movie information, reviews, and anything else that was available for each of these movies.
-
-\subsection{Rotten Tomatoes}
-
-	The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 movies by 4474 critics. Of all these reviews, 101492 were identified as ``top'' reviews. These were written by 1343 different critics.
-
-	The Rotten Tomatoes data is very promising. Movies are reviewed by on average about twenty critics which are designated as \textit{top critics}, and by about one hundred critics with no top designation. Furthermore, these distributions are fairly uniform as shown by the Histogram in Figure \ref{fig:r_mov}. This means that we have a large number of movies with many critic reviews.
-
-	Critics have, on average, about twenty movie reviews where they are designated as \textit{top critics}, and about seventy where they receive no designation. This might seem surprising as we would expect top critics to review more things. Really this reflects an interesting naming convention by Rotten Tomatoes. Though a critic may be designated as a \textit{top critic} for a particular movie, this designation may change from movie to movie. One notable exception is Roger Ebert who was designated as a top critic for $2862$ movies! These distributions are more skewed by critics, like Ebert, who have reviewed many movies as seen in Figure \ref{fig:r_crit}. However, there are still many critics who have reviewed a sizable number of films.
-
-	Rotten Tomatoes differentiates between individual critics and the publication which they write for. If we look at the same things we looked at for critics, but group them by publication, we find a higher mean number of films reviewed. This could be useful as publications, like critics, may maintain a distinct taste profile.
-
-	\begin{table}[H]
-	 \centering
-	 \caption{Distribution of number of reviews per critic for movies on rotten tomatoes}
-	 \begin{tabular}{ l | c | c | c | c }
-	 \hline
-	 &  Min & Max & Mean & Std Dev  \\
-	 \hline
-	 Top Critcs & 0 & 56 & 22.41 & 16.06 \\
-	 Other Critics & 0 & 316 & 92.24 & 68.12 \\
-	 \hline
-	 \end{tabular}
-	 \end{table}
-
-	\begin{figure}[H]
-	    \centering
-	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_mov_top.png}
-	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_mov_oth.png}
-	    \caption{Cumulative histograms of critic reviews per movie for movies on Rotten Tomatoes}
-	    \label{fig:r_mov} 
-	\end{figure}
-
-
-	\begin{table}[H]
-	 \centering
-	 \caption{Distribution of number of reviewed movies per critic on rotten tomatoes} 
-	 \begin{tabular}{ l | c | c | c | c }
-	 \hline
-	 &  Min & Max & Mean & Std Dev  \\
-	 \hline
-	 Top Critcs & 0 & 2862 & 21.79 & 124.96 \\
-	 Other Critics & 0 & 2634 & 68.16 & 224.77 \\
-	 \hline
-	 \end{tabular}
-	 \end{table}
-
-	\begin{figure}[H]
-	    \centering
-	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_crit_top.png}
-	    \includegraphics[width=0.48\textwidth]{data_plots/plot_r_crit_oth.png}
-	    \caption{Cumulative histograms of the number of movies reviewed by critics on Rotten Tomatoes}
-	    \label{fig:r_crit}
-	\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_crit_top.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_crit_oth.png}
+    \caption{Cumulative histograms of the number of movies reviewed by critics on Rotten Tomatoes}
+    \label{fig:r_crit}
+\end{figure}
 
 
 
