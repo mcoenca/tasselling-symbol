@@ -88,7 +88,7 @@ class StochasticGradientDescent:
 		for example in examples:
 			critic, movie, value = example
 			expected_value = predictor[critic, movie]
-			cumulative_sq_error += (value - expected_value)**2
+			cumulative_sq_error += abs(value - expected_value)
 		return cumulative_sq_error, len(examples)
 
 

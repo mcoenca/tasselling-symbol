@@ -1,7 +1,7 @@
 #!/bin/bash
 dimension=( 1 10 25 40)
-lambda=( 0 1 3 10 )
-iterations=100
+lambda=( 0 10 100 1000 )
+iterations=40
 
 for dim in "${dimension[@]}"; do
 	for i in 0 1 2 3; do

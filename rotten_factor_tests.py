@@ -12,8 +12,7 @@ def get_normalized_ratings():
     np.random.shuffle(ratings)
     just_ratings = list(zip(*ratings))[2]
     mu = np.mean(just_ratings)
-    std = np.std(just_ratings)
-    ratings = [(c, m, (s - mu) / std) for (c,m,s) in ratings]
+    ratings = [(c, m, (s - mu)) for (c,m,s) in ratings]
     return ratings
 
 def run_test(iterations, dimension, lambda_v, step, filename):
@@ -64,14 +63,17 @@ def random_test():
     error = 0
     for rating in ratings_train:
         _,_,value = rating
-        calc = np.random.normal(0,1)
-        error +=  (value - calc)**2
+        calc = np.random.normal(0,100)
+        error +=  abs(value - calc)
     print(error / len(ratings_train))
     error = 0
     for rating in ratings_train:
         _,_,value = rating
-        error +=  (value)**2
+        error +=  abs(value)
     print(error / len(ratings_train))
 
-#random_test()
-main()
+
+
+if __name__ == '__main__':
+    #random_test()
+    main()

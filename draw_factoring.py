@@ -27,13 +27,13 @@ def extract(item):
 
 def plot(tr_x, tr_y, te_x, te_y, fname, lambda_val):
     plt.plot(tr_x, tr_y, 'ro', te_x, te_y, 'g^')
-    plt.title("Plot of Mean Squared Error vs. Iteration")
+    plt.title("Plot of Mean Absolute Error vs. Iteration For Lambda = "+str(lambda_val))
     plt.xlabel("Iteration")
     plt.ylabel("Error")
-    plt.xlim((0,100))
-    plt.ylim((0.0,1))
-    plt.legend(['Training Error','Test Error'])
-    plt.savefig("{}.{}".format(fname.split('.')[0],"png"), dpi=400)
+    plt.xlim((0,20))
+    plt.ylim((8,16))
+    plt.legend(['Training Error','Test Error', 'Mean'])
+    plt.savefig("{}.{}".format(fname.split('.')[0],"png"), dpi=200)
     plt.clf()
  
 def draw(data, filename):
@@ -53,21 +53,21 @@ def print_latex():
     for d in [1,10,25,40]:
         print("\\begin{figure}[H]")
         print("\\centering")
-        for i in [0,1,3,10]:
-            print("\\includegraphics[width=0.48\\textwidth]{plots/test-i100d"+\
+        for i in [0,10,100,1000]:
+            print("\\includegraphics[width=0\\factwidth\\textwidth,height=\\factheight]{plots/test-i40d"+\
                     str(d)+"l"+str(i)+".png}")
-        print("\\caption{Mean squared training and test error over 100 iterations in the "+
-            "stochastic matrix factorization model. Stocastic gradient descent was done using "+
-            "a step size of 0.02. The learned critic matrix was count(critics) by "+str(d)+
+        print("\\caption{Mean absolute training and test error over 20 iterations in the "+
+            "stochastic matrix factorization model. Stocastic gradient descent was performed using "+
+            "a step size of 0.002. The learned critic matrix was count(critics) by "+str(d)+
             ", and the learned movie matrix was "+str(d)+" by count(movies).}")
-        print("\\label{fig:"+str(d)+"}")
+        print("\\label{fig:fac-d"+str(d)+"}")
         print("\\end{figure}")
 
 
 
 def main(): 
-    print_latex()
-    load_data("factor_results")
+    #print_latex()
+    load_data("err")
 
 if __name__ == '__main__':
     main()
