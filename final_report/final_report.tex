@@ -32,6 +32,7 @@
 	\setlength{\parskip}{5pt plus 1pt}
 	 
 	\pagestyle{fancyplain}
+    \headheight 30pt
 	\lhead{\fancyplain{}{\textbf{Final project report}}}      % Note the different brackets!
 	\rhead{\fancyplain{}{\myname\\ \myandrew}}
 	\chead{\fancyplain{}{10-701}}
@@ -64,7 +65,7 @@ tastes, and finding which ones to listen to can be a difficult task.
 
 \subsection{Ay, there's the rub} % For in that sleep of death, what dreams may
                                  % come when we have shuffled off this mortal
-						\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror		 % coil must give us pause
+								 % coil must give us pause
 
 Our goal is to find critics that are ``similar'' to users in some sense, such
 that users can rely on these critics' reviews in order to decide which movies
@@ -250,7 +251,7 @@ some from 0-10, and others on more obscure scales), it was necessary to
 normalize the ratings. We decided to use scores between 0 and 100, and converted
 accordingly. For fractional grades, we simply converted to percentages. Our 
 conversions for alphabetical grades are shown in table \ref{tab:conv}. For some 
-data, the critics score was unavailable or uninterpretable (e.g. ``bomb'' or 
+data, the critics score was unavailable or uninterpretable (e.g. ``Turkey!'' or 
 ``capsule''). In these cases, if the freshness score was available we gave the 
 film a rating based on the freshness.
 
@@ -383,9 +384,29 @@ enough for us to reliably determine critic similarity
 To our surprise, even though collaborative filtering appeared to us as a more
 natural fit, the results it produced failed to outperform matrix factorization.
 
+Indeed, figure \ref{fig:collab_p}  shows that the collaborative filtering
+recommender achieved a mean absolute test
+error of 15.5 using adjusted cosine and 14.0 using Pearson correlation, whereas
+matrix factorization achieved \matrixtesterror. Of course, the mean error of
+rating prediction algorithms is only an indirect measure of the performance of
+similarity measures, so it is hard to conclude which approach is better.
+
+Figure \ref{fig:collab_k} shows that the model does not perform significantly
+better when estimating ratings using
+a weighted average of the 1000 closest critics rather than simply the 10
+closest. This points to the fact that few critics are usually close to a given
+critic, so only a small number of them will have any significant impact on
+the estimated average.
+
+We furthermore observed (see figure \ref{fig:collab_n}) that restricting the
+training data to critics having
+written a large number of reviews did not have any significant effect on the
+mean error. Thus the system can be made more performant by ignoring at least
+half of the reviewers.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../plots/collab/graph_p.png}
+\includegraphics[width=0.7\textwidth]{../plots/collab/graph_p.png}
 \caption{Mean test error of the collaborative filtering recommender trained
     over a varying proportion $p$ of the ratings. All critics with at least
     n = 1 review were used for training, and ratings were predicted using the
@@ -393,43 +414,44 @@ natural fit, the results it produced failed to outperform matrix factorization.
 \label{fig:collab_p}
 \end{figure}
 
-Indeed, the collaborative filtering recommender achieved a mean absolute test
-error of 15.5 using adjusted cosine and 14.0 using Pearson correlation, whereas
-matrix factorization achieved \matrixtesterror. Of course, the mean error of
-rating prediction algorithms is only an indirect measure of the performance of
-similarity measures, so it is hard to conclude which approach is better.
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../plots/collab/graph_k.png}
+\includegraphics[width=0.7\textwidth]{../plots/collab/graph_k.png}
 \caption{Mean test error of the collaborative filtering recommender using a
     varying number k of closest critics. All critics with at least n = 1
     review were used for training, and the model was trained on 50\% of the
     review data.}
-\label{fig:collab_p}
+\label{fig:collab_k}
 \end{figure}
-
-The model does not perform significantly better when estimating ratings using
-a weighted average of the 1000 closest critics rather than simply the 10
-closest. This points to the fact that few critics are usually close to a given
-critic, so only a small number of them will have any significant impact on
-the estimated average.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../plots/collab/graph_n.png}
+\includegraphics[width=0.7\textwidth]{../plots/collab/graph_n.png}
 \caption{Mean test error of the collaborative filtering recommender using only
     those critics having written at least n reviews. The model was trained on
     50\% of the review data, and only the k = 10 closest critics were used to
     estimate ratings.}
-\label{fig:collab_p}
+\label{fig:collab_n}
 \end{figure}
 
-We furthermore observed that restricting the training data to critics having
-written a large number of reviews did not have any significant effect on the
-mean error. Thus the system can be made more performant by ignoring at least
-half of the reviewers.
+One important difference between matrix factorization and collaborative
+filtering lies in the time complexity of both algorithms. Learning the matrix
+factorization model is slow ($O(NMi)$ where $N$ is the number of critics, $M$
+the number of movies and $i$ the number of iterations), and gets slower with
+the number of iterations desired. Once it is done though, similarities between
+critics as well as estimated movie ratings can be computed in constant time.
 
+On the other hand, there is no real learning phase in the case collaborative
+filtering. One can simply precompute the similarities between critics, which
+takes $O(NM)$ time at worst (it can be optimized by using sparse matrix
+representations). Then of course computing the similarity between two critics
+takes constant time. However estimating a movie rating takes $O(N)$, so
+estimating every movie rating for every critic takes $O(N^2M)$, which is
+significantly worse than matrix factorization.
+
+In our case, collaborative filtering is significantly faster, as it requires no
+learning phase to compute similarities. Estimating ratings may be slower, but
+it is only required for performance comparison.
 
 \section{Further work}
 
