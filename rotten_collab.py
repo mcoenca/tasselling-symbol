@@ -12,6 +12,8 @@ from scipy import sparse
 from numpy import linalg
 import matplotlib.pyplot as plt
 
+PLOT_DIR = 'plots/collab'
+
 #----------------------------------------------------------#
 # The class that actually performs collaborative filtering #
 #----------------------------------------------------------#
@@ -286,7 +288,8 @@ def graph_p(ps, n, k):
     plt.xlabel("p: proportion of total data used for training")
     plt.title("Collaborative filtering test error depending on p")
     plt.legend()
-    plt.savefig("graph_p.png", format="png", dpi=600)
+    outfile = path.join(PLOT_DIR, "graph_p.png")
+    plt.savefig(outfile, dpi=600)
     plt.show()
 
 def graph_k(p, n, ks):
@@ -319,7 +322,8 @@ def graph_k(p, n, ks):
     plt.xlabel("k: number of nearest neighbors used to estimate rating")
     plt.title("Collaborative filtering test error depending on k")
     plt.legend()
-    plt.savefig("graph_k.png", format="png", dpi=600)
+    outfile = path.join(PLOT_DIR, "graph_k.png")
+    plt.savefig(outfile, dpi=600)
     plt.show()
 
 def graph_n(p, ns, k):
@@ -352,7 +356,8 @@ def graph_n(p, ns, k):
     plt.xlabel("n: minimum number of reviews per critic")
     plt.title("Collaborative filtering test error depending on n")
     plt.legend()
-    plt.savefig("graph_n.png", format="png", dpi=600)
+    outfile = path.join(PLOT_DIR, "graph_n.png")
+    plt.savefig(outfile, dpi=600)
     plt.show()
 
 def graph(which=['p', 'n', 'k']):
