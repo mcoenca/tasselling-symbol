@@ -46,9 +46,13 @@
 
 \section{Introduction}
 
-As Netflix and others have noticed, it is quite difficult to accurately predict which movies a user will enjoy. We were interested, not so much in predicting which movies a user will be interested in, but which critics their taste most closely aligns with. There are many critics on the Internet with wildly varying tastes, and finding which ones to listen to can be a difficult task.
+As Netflix and others have noticed, it is quite difficult to accurately predict
+which movies a user will enjoy. We were interested, not so much in predicting
+which movies a user will be interested in, but which critics their taste most
+closely aligns with. There are many critics on the Internet with wildly varying
+tastes, and finding which ones to listen to can be a difficult task.
 
-Our work up to here has focused on obtaining meaningful data to perform machine learning on, and running a simple machine learning algorithm on the data. Current results as well as plans for the future are outlined below.
+
 
 \section{So, what seems to be the problem?}
 
@@ -166,7 +170,8 @@ adjusted cosine similarity measure, as described by Sarwar et al. in
 Given two critic rating vectors $u,v$, the adjusted cosine similarity is given
 by the following formula:
 
-$$ \text{similarity}_{\text{cosine}}(u,v) = \frac{u \cdot v}{\norm{u} \times \norm{v}} $$
+$$ \text{similarity}_{\text{cosine}}(u,v) =
+\frac{u \cdot v}{\norm{u} \times \norm{v}} $$
 
 It is important to note that the non-zero terms in the dot product sum
 correspond to the movies that both critics have reviewed. All other movies may
@@ -178,45 +183,53 @@ movie $i$:
 $$ r_{u,i} = K \sum_{v \in U_i} \text{similarity}(u,v) r_{v,i} $$
 
 The Pearson correlation-based similarity measure tries to account for the fact
-that different critics have different mean ratings. Indeed, critic $u$ rating a
-movie 60\% can be interpreted completely differently if her mean rating
+that different critics have different mean ratings. Indeed, the fact that
+critic $u$ has given a 60\% rating to a movie
+can be interpreted completely differently if her mean rating
 $\bar{u}$ is 50\% or if it is $70\%$. This results in the following formula:
 
-$$ \text{similarity}_{\text{pearson}}(u,v) = \frac{ (u - \bar{u}) \cdot (v - \bar{v})}{\norm{u - \bar{u}} \times \norm{v-\bar{v}}} $$
+$$ \text{similarity}_{\text{pearson}}(u,v) =
+\frac{ (u - \bar{u}) \cdot (v - \bar{v})}
+{\norm{u - \bar{u}} \times \norm{v-\bar{v}}} $$
 
 Here, the dot product notation is technically erroneous, as we only consider
 those terms in the sum corresponding to movies that both critics have rated.
 In other words, this notation corresponds to:
 
-$$
-(u - \bar{u}) \cdot (v - \bar{v}) = \sum_{i \in I_{u,v}} (u_i - \bar{u})(v_i - \bar{v})
-$$
-$$
-\text{where} \  I_{u,v} = \{ i \in I \  \text{s.t.} \   u_i \neq 0, v_i \neq 0 \}
-$$
+$$ (u - \bar{u}) \cdot (v - \bar{v}) = 
+\sum_{i \in I_{u,v}} (u_i - \bar{u})(v_i - \bar{v}) $$
+$$ \text{where} \  I_{u,v} = 
+\{ i \in I \  \text{s.t.} \   u_i \neq 0, v_i \neq 0 \} $$
 
 This similarity measure can then be used to estimate unknown ratings in the
 following manner:
 
-$$ r_{u,i} = \bar{r}_u + K \sum_{v \in U_i} \text{similarity}(u,v) (r_{v,i}-\bar{r}_v) $$
+$$ r_{u,i} = 
+\bar{r}_u + K \sum_{v \in U_i} \text{similarity}(u,v) (r_{v,i}-\bar{r}_v) $$
 
 In both cases, $K$ is simply the normalization factor for the weighted average:
 
 $$ \frac{1}{K} = \sum_{v \in U_i} \abs{\text{similarity(u,v)}} $$
 
-And $U_i$ is simply the set of critics that have reviewed movie $i$, i.e.
+And $U_i$ is the set of critics that have reviewed movie $i$, i.e.
 $U_i = \{ v \in U \  \text{s.t.} \  v_i \neq 0 \}$.
 
+Whatever the similarity measure, collaborative filtering generally runs into
+two main problems:
 
-Collaborative filtering generally runs into two main problems:
+\begin{itemize}
 
-data sparsity : if some movies are insufficiently reviewed, they will be hard to recommend accurately. 
-We hypothesized that professional movie critics would have reviewed enough films for this not to be a problem.
+    \item data sparsity : if some movies are insufficiently reviewed, they will
+        be hard to recommend accurately. We hypothesized that professional
+        movie critics would have reviewed enough films for this not to be a
+        problem.
 
-scalability : the algorithms take linear time in the number of users. In the case of large internet systems this can pose a problem.
-This does not affect us as we are limited to a small enough number of critics.
+    \item scalability : the algorithms take linear time in the number of users.
+        In the case of large internet systems this can pose a problem. This
+        does not affect us as we are limited to a small enough number of
+        critics.
 
-
+\end{itemize}
 
 \section{Experiments}
 
