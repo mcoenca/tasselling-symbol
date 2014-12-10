@@ -249,7 +249,7 @@ def compare_estimates(data, k):
 
     data["estimates"] = estimates
 
-    print("All cool bro!") 
+    print("All cool bro!")
     return err_mean, err_std
 
 #------------------------#
@@ -373,10 +373,16 @@ def graph(which=['p', 'n', 'k']):
 # Actually do stuff #
 #-------------------#
 
+def stats():
+    nothing, all_reviews = get_reviews(0,0)
+    _ , _, ratings = zip(*all_reviews)
+    print("Mean Rating: %f +/- %f" % (np.mean(ratings), np.std(ratings)))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Collaborative filtering yo!')
     parser.add_argument('command', metavar='COMMAND',
-            choices=['compare', 'graph', 'graph_k', 'graph_p', 'graph_n'])
+            choices=['compare', 'graph', 'graph_k', 'graph_p', 'graph_n', 'stats'])
     parser.add_argument('-m', metavar='METHOD',
             choices=['pearson', 'cosine'], default='cosine',
             help='Similarity measurement method: cosine, pearson')
@@ -401,6 +407,9 @@ def main():
         graph(['n'])
     elif args.command == 'graph_k':
         graph(['k'])
+    elif args.command == 'stats':
+        stats()
+
 
 if __name__ == '__main__':
     main()
