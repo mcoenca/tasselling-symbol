@@ -204,6 +204,21 @@ F  & 100 &    &     \\
 \end{tabular}
 \end{table}
 
+For some data, the critics score was unavailable or uninterpretable (e.g. 
+``bomb'' or ``capsule''). In these cases, if the freshness score was available
+we gave the film a rating based on the freshness score as follows:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | c | c |}
+\hline
+ & Fresh & Not Fresh \\
+\hline
+Converted Score & 75 & 25 \\
+\hline
+\end{tabular}
+\end{table} 
+
 The data we retrieved from Rotten Tomatoes included 520068 reviews of 4538 movies by 4474 critics. Of all these reviews, 101492 were identified as top reviews, and these were written by 1343 unique critics.
 
 Overall, each movie was rated by a median of 97 critics, and each critic rated a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
