@@ -12,7 +12,12 @@ from scipy import sparse
 from numpy import linalg
 import matplotlib.pyplot as plt
 
+# Folder in which to save plots
 PLOT_DIR = 'plots/collab'
+# Mean error of mean predictor is mean
+MEAN_ERR = 20
+# Mean error of matrix factorization predictor
+MATRIX_ERR = 13.2
 
 #----------------------------------------------------------#
 # The class that actually performs collaborative filtering #
@@ -279,9 +284,10 @@ def graph_p(ps, n, k):
     plt.figure()
 
     plt.errorbar(ps, cos_err_means, yerr=cos_err_stds, fmt='-o', 
-            label='Cosine error mean')
+            label='Cosine')
     plt.errorbar(ps, pea_err_means, yerr=pea_err_stds, fmt='-o',
-            label='Pearson error mean')
+            label='Pearson')
+    plt.plot(ps, [MATRIX_ERR] * len(ps), label='Matrix factorization')
 
     plt.xscale('log')
     plt.ylabel("Test error (n = {}, k = {})".format(n,k))
@@ -313,9 +319,10 @@ def graph_k(p, n, ks):
     plt.figure()
 
     plt.errorbar(ks, cos_err_means, yerr=cos_err_stds, fmt='-o',
-            label='Cosine error mean')
+            label='Cosine')
     plt.errorbar(ks, pea_err_means, yerr=pea_err_stds, fmt='-o',
-            label='Pearson error mean')
+            label='Pearson')
+    plt.plot(ks, [MATRIX_ERR] * len(ks), label='Matrix factorization')
 
     plt.xscale('log')
     plt.ylabel("Test error (n = {}, p = {})".format(n,p))
@@ -347,9 +354,10 @@ def graph_n(p, ns, k):
     fig = plt.figure()
 
     plt.errorbar(ns, cos_err_means, yerr=cos_err_stds, fmt='-o',
-            label='Cosine error mean')
+            label='Cosine')
     plt.errorbar(ns, pea_err_means, yerr=pea_err_stds, fmt='-o',
-            label='Pearson error mean')
+            label='Pearson')
+    plt.plot(ns, [MATRIX_ERR] * len(ns), label='Matrix factorization')
 
     plt.xscale('log')
     plt.ylabel("Test error (p = {}, k = {})".format(p,k))
