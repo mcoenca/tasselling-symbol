@@ -209,13 +209,13 @@ film a rating based on the freshness.
 \hline
 Original Score & Converted Score & Original Score & Converted Score \\
 \hline
-A+ & 100 & A  & 100 \\
-A- & 100 & B+ & 100 \\
-B  & 100 & B- & 100 \\
-C+ & 100 & C  & 100 \\
-C- & 100 & D+ & 100 \\
-D  & 100 & D- & 100 \\
-F  & 100 &    &     \\
+A+ & 95 & A  & 87 \\
+A- & 80 & B+ & 75 \\
+B  & 67 & B- & 60 \\
+C+ & 55 & C  & 47 \\
+C- & 40 & D+ & 35 \\
+D  & 27 & D- & 20 \\
+F  & 7 &    &     \\
 \hline
 Original Score & Converted Score & Original Score & Converted Score \\
 \hline
@@ -262,13 +262,30 @@ a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
 
 \section{Matrix factorization results}
 
-Figures 6-9 show some of the results we obtained with this technique. We first tried with only one dimension per user and critic $D=1$. As shown in Figure \ref{fig:1}, this produces quite unimpressive results. This model is far too simple to learn anything particularly interesting. All we can really learn here is how lenient critics are, and the average rating given to a movie.
+Figures 6-9 show some of the results we obtained with this technique. We first 
+tried with only one dimension per user and critic $D=1$. As shown in Figure 
+\ref{fig:1}, this produces quite unimpressive results. This model is far too 
+simple to learn anything particularly interesting. All we can really learn here 
+is how lenient critics are, and the average rating given to a movie.
 
-As we increase the number of features, we see that our training and test error both improve. However, as this occurs the training and test error become less correlated. We see that with a larger number of dimensions we become more vulnerable to over fitting, and the regularization parameter $\lambda$ becomes increasingly important. It is interesting that, throughout our different models, though the training error varies significantly, the test error consistently reaches a minimum at around $0.43$. 
+As we increase the number of features, we see that our training and test error 
+both improve. However, as this occurs the training and test error become less 
+correlated. We see that with a larger number of dimensions we become more 
+vulnerable to over fitting, and the regularization parameter $\lambda$ becomes 
+increasingly important. It is interesting that, throughout our different 
+models, though the training error varies significantly, the test error 
+consistently reaches a minimum at around $0.43$. 
 
-The best test error seems to occur in the most complex model with the highest regularization constant $D=40$, $\lambda = 10$, but it is not much better than the test error achieved in other models.
+The best test error seems to occur in the most complex model with the highest 
+regularization constant $D=40$, $\lambda = 10$, but it is not much better than 
+the test error achieved in other models.
 
-Since the data has mean zero and standard deviation one, the zero predictor, which assigns a rating of zero to every element would give us an average squared error of $1.0$, and the random predictor who assigns a rating with mean zero and standard deviation would give an average squared error of $2.0$. Our model at $0.43$ does do significantly better than random. However, by incorporating more features into our model we hope to do much better.
+Since the data has mean zero and standard deviation one, the zero predictor, 
+which assigns a rating of zero to every element would give us an average 
+squared error of $1.0$, and the random predictor who assigns a rating with 
+mean zero and standard deviation would give an average squared error of $2.0$. 
+Our model at $0.43$ does do significantly better than random, but not well 
+enough for us to reliably determine critic similarity
 
 	\begin{figure}[H]
 	\centering
