@@ -21,6 +21,7 @@
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \newcommand{\plotwidth}{0.34}
+\newcommand{\matrixtesterror}{13.2}
 %Page header
 	\setlength{\parindent}{0pt}
 	\setlength{\parskip}{5pt plus 1pt}
@@ -58,7 +59,7 @@ tastes, and finding which ones to listen to can be a difficult task.
 
 \subsection{Ay, there's the rub} % For in that sleep of death, what dreams may
                                  % come when we have shuffled off this mortal
-								 % coil must give us pause
+						\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror\matrixtesterror		 % coil must give us pause
 
 Our goal is to find critics that are ``similar'' to users in some sense, such
 that users can rely on these critics' reviews in order to decide which movies
@@ -147,7 +148,7 @@ Calculating the gradient of this sum of $NM$ terms in turn requires the calculat
 
 \section{Collaborative Filtering}
 
-In light of the poor results of matrix factorization, and in order to compare 
+In order to compare 
 approaches, we decided to switch from a content-based recommendation system to
 a collaborative recommendation system.
 
@@ -378,14 +379,55 @@ enough for us to reliably determine critic similarity
 
 \section{Collaborative Filtering Results}
 
+To our surprise, even though collaborative filtering appeared to us as a more
+natural fit, the results it produced failed to outperform matrix factorization.
 
-Collaborative filtering results
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../plots/collab/graph_p.png}
+\caption{Mean test error of the collaborative filtering recommender trained
+    over a varying proportion $p$ of the ratings. All critics with at least
+    n = 1 review were used for training, and ratings were predicted using the
+    k = 10 closest critics.}
+\label{fig:collab_p}
+\end{figure}
 
-Predicting critic ratings using collaborative filtering worked quite well. It confirmed that data sparsity can be overcome in the context of movies by relying on the extensive review history of movie critics.
+Indeed, the collaborative filtering recommender achieved a mean absolute test
+error of 15.5 using adjusted cosine and 14.0 using Pearson correlation, whereas
+matrix factorization achieved \matrixtesterror. Of course, the mean error of
+rating prediction algorithms is only an indirect measure of the performance of
+similarity measures, so it is hard to conclude which approach is better.
 
-Indeed, using only 10\% of the reviews as training data we were able to reach a 17\% mean error (all movies are rated out of 100).
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../plots/collab/graph_k.png}
+\caption{Mean test error of the collaborative filtering recommender using a
+    varying number k of closest critics. All critics with at least n = 1
+    review were used for training, and the model was trained on 50\% of the
+    review data.}
+\label{fig:collab_p}
+\end{figure}
 
-We furthermore observed that restricting the training data to critics having written a large number of reviews did not have any significant effect on the mean error. Thus the system can be made more performant by ignoring at least half of the reviewers.
+The model does not perform significantly better when estimating ratings using
+a weighted average of the 1000 closest critics rather than simply the 10
+closest. This points to the fact that few critics are usually close to a given
+critic, so only a small number of them will have any significant impact on
+the estimated average.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{../plots/collab/graph_n.png}
+\caption{Mean test error of the collaborative filtering recommender using only
+    those critics having written at least n reviews. The model was trained on
+    50\% of the review data, and only the k = 10 closest critics were used to
+    estimate ratings.}
+\label{fig:collab_p}
+\end{figure}
+
+We furthermore observed that restricting the training data to critics having
+written a large number of reviews did not have any significant effect on the
+mean error. Thus the system can be made more performant by ignoring at least
+half of the reviewers.
 
 
 \section{Further work}
