@@ -290,16 +290,16 @@ a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_mov_top.png}
-    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_mov_oth.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{../plots/data/plot_r_mov_top.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{../plots/data/plot_r_mov_oth.png}
     \caption{Cumulative histograms of critic reviews per movie for movies on Rotten Tomatoes}
     \label{fig:r_mov} 
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_crit_top.png}
-    \includegraphics[width=0.44\textwidth, height=140px]{data_plots/plot_r_crit_oth.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{../plots/data/plot_r_crit_top.png}
+    \includegraphics[width=0.44\textwidth, height=140px]{../plots/data/plot_r_crit_oth.png}
     \caption{Cumulative histograms of the number of movies reviewed by critics on Rotten Tomatoes}
     \label{fig:r_crit}
 \end{figure}
@@ -335,10 +335,10 @@ enough for us to reliably determine critic similarity
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d1l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d1l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d1l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d1l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d1l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
 	\label{fig:1}
 	\end{figure}
@@ -346,10 +346,10 @@ enough for us to reliably determine critic similarity
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d10l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d10l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d10l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d10l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d10l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
 	\label{fig:10}
 	\end{figure}
@@ -357,10 +357,10 @@ enough for us to reliably determine critic similarity
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d25l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d25l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d25l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d25l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d25l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
 	\label{fig:25}
 	\end{figure}
@@ -368,10 +368,10 @@ enough for us to reliably determine critic similarity
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l0.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l1.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l3.png}
-	\includegraphics[width=\plotwidth\textwidth]{matrix_plots/test-i100d40l10.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d40l0.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d40l1.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d40l3.png}
+	\includegraphics[width=\plotwidth\textwidth]{../plots/matrix/test-i100d40l10.png}
 	\caption{Mean squared training and test error over 100 iterations in the stochastic matrix factorization model. Stochastic gradient descent was done using a step size of 0.02. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
 	\label{fig:40}
 	\end{figure}
