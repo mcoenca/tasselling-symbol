@@ -459,8 +459,8 @@ did not really improve rating prediction performance significantly.
 
 One important difference between matrix factorization and collaborative
 filtering lies in the time complexity of both algorithms. Learning the matrix
-factorization model is slow ($O(NMi)$ where $N$ is the number of critics, $M$
-the number of movies and $i$ the number of iterations), and gets slower with
+factorization model is slow ($O(ti)$ where $t$ is the number of training 
+examples and $i$ the number of iterations), and gets slower with
 the number of iterations desired. Once it is done though, similarities between
 critics as well as estimated movie ratings can be computed in constant time.
 Therefore on average computing the similarity between two critics takes
@@ -474,8 +474,8 @@ every critic takes $O(N^2M)$, which is significantly worse than matrix
 factorization.
 
 Even though $iM/N < M$, in practice we found that collaborative filtering was
-faster than matrix factorization. This may however be due to implementation
-kinks that could be smoothed out. 
+faster than matrix factorization. This is likely due to the collaborative
+filtering being more able to take advantage of vectorized operations in numpy.
 
 \section{Conclusions and further work}
 
