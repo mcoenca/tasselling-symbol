@@ -19,7 +19,7 @@ def run_test(ratings_train, ratings_test):
     sgd = matrix_factor.StochasticGradientDescent(ratings_train, 
         test_examples=ratings_test, critics=4475, movies=4539, dimension=40,
         lambda_val=1000, filename=None, step=0.002)
-    sgd.stochastic_descent(1, print_error=False, print_iter=True)
+    sgd.stochastic_descent(10, print_error=False, print_iter=True)
     return sgd
 
 def main():
