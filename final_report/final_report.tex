@@ -439,31 +439,61 @@ half of the reviewers.
 \label{fig:collab_n}
 \end{figure}
 
+\subsection{Performance}
+
 One important difference between matrix factorization and collaborative
 filtering lies in the time complexity of both algorithms. Learning the matrix
 factorization model is slow ($O(NMi)$ where $N$ is the number of critics, $M$
 the number of movies and $i$ the number of iterations), and gets slower with
 the number of iterations desired. Once it is done though, similarities between
 critics as well as estimated movie ratings can be computed in constant time.
+Therefore on average computing the similarity between two critics takes
+$O(iM/N)$ time.
 
 On the other hand, there is no real learning phase in the case collaborative
-filtering. One can simply precompute the similarities between critics, which
-takes $O(NM)$ time at worst (it can be optimized by using sparse matrix
-representations). Then of course computing the similarity between two critics
-takes constant time. However estimating a movie rating takes $O(N)$, so
-estimating every movie rating for every critic takes $O(N^2M)$, which is
-significantly worse than matrix factorization.
+filtering. Computing the similarity between two critics takes $O(M)$ time at
+worst (it can be optimized by using sparse matrix representations). However
+estimating a movie rating takes $O(N)$, so estimating every movie rating for
+every critic takes $O(N^2M)$, which is significantly worse than matrix
+factorization.
 
-In our case, collaborative filtering is significantly faster, as it requires no
-learning phase to compute similarities. Estimating ratings may be slower, but
-it is only required for performance comparison.
+Even though $iM/N < M$, in practice we found that collaborative filtering was
+faster than matrix factorization. This may however be due to implementation
+kinks that could be smoothed out. 
 
-\section{Further work}
+\section{Conclusions and further work}
 
+We were surprised to learn that matrix factorization performs better than
+collaborative filtering for rating prediction, both in terms of test error and
+in terms of speed. Both are very simple models, but collaborative filtering
+seemed to more accurately model reality. It appears that review sparsity is
+hard to overcome, even when considering only professional movie critics.
 
-The second extension would be to extract more features from data we already have (review publication, movie director, cast, runtime, MPAA rating, etc.) and integrate them in our matrix factorization model. Adding these fixed features to the feature matrices would allow us to more accurately learn the remaining features and therefore enable us to learn a better measure of critic similarity.
+This advantage does not directly translate to finding the best critics though,
+as the performance edge in this case goes to collaborative filtering, and 
+rating prediction performance may not be directly indicative of similarity
+measure accuracy.
 
-The third extension would be to do text analysis on reviews in order to extract critic features (vocabulary, length of reviews, \dots) and movie features (we could learn the movie genre, what emotions it evokes, \dots). This would require a significant amount of work, as sentiment analysis is another entire field of machine learning.
+Without significant test data allowing us to directly measure the performance
+of our algorithms, we cannot definitively conclude as to which approach is best
+for this task.
+
+A possible avenue of improvement for this problem would be to investigate
+possible combinations of the two approaches that may or may not yield better
+results.
+
+A second extension would be to extract more features from data we already
+have (review publication, movie director, cast, runtime, MPAA rating, etc.) and
+integrate them in our matrix factorization model. Adding these fixed features
+to the feature matrices would allow us to more accurately learn the remaining
+features and therefore enable us to learn a better measure of critic
+similarity.
+
+A third extension would be to do text analysis on reviews in order to extract
+critic features (vocabulary, length of reviews, \dots) and movie features (we
+could learn the movie genre, what emotions it evokes, \dots). This would
+require a significant amount of work, as sentiment analysis is another entire
+field of machine learning.
 
 \bibliography{bibliography}{}
 \bibliographystyle{plain}
