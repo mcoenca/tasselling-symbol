@@ -6,7 +6,7 @@ iterations=40
 for dim in "${dimension[@]}"; do
 	for i in 0 1 2 3; do
 		lam=${lambda[i]}
-		cmd="python3 rotten_factor_tests.py -i $iterations -d $dim -l $lam -s 0.002 -f factor_results"
+		cmd="./rotten_factor_tests.py -i $iterations -d $dim -l $lam -s 0.002 -f factor_results"
 		$cmd &
 		pid[i]=$!
 	done

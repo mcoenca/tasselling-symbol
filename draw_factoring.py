@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy as np
 import json
 import matplotlib.pyplot as plt
@@ -8,7 +10,6 @@ import argparse
 import os
 from os.path import isfile, join
 import errno
-
 
 def load_data(dirname):
     onlyfiles = [f for f in os.listdir(dirname) if isfile(join(dirname, f))]
