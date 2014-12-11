@@ -72,7 +72,6 @@ class StochasticGradientDescent:
 				json.dump(params, fp, indent=4)
 					
 
-
 	def stochastic_iteration(self):
 		sumgrads = 0
 		rand.shuffle(self.__examples)
@@ -80,6 +79,10 @@ class StochasticGradientDescent:
 			row_grad, col_grad = self.__partial_gradient(example)
 			sumgrads += sum(abs(row_grad))+sum(abs(col_grad))
 		return sumgrads
+
+
+	def predict(self, critic, movie):
+		return predictor[critic, movie]
 
 
 	def calculate_error(self, examples):
