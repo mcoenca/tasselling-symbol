@@ -14,6 +14,7 @@ class StochasticGradientDescent:
 	__iteration_record = []
 	critic_rows = None
 	movie_cols = None
+	predictor = None
 	
 
 	def __init__(self, examples, step=0.002, lambda_val=0, dimension=1, 
@@ -82,7 +83,9 @@ class StochasticGradientDescent:
 
 
 	def predict(self, critic, movie):
-		return predictor[critic, movie]
+		if self.predictor == None:
+			self.predictor = self.critic_rows.dot(self.movie_cols)
+		return self.predictor[critic, movie]
 
 
 	def calculate_error(self, examples):
