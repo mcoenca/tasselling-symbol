@@ -466,7 +466,7 @@ The two approaches could be combined in sophisticated ways, such as using
 critic feature vectors as the basis for collaborative filtering for example.
 We tried a simpler approach, by averaging the scores predicted by matrix
 factorization and collaborative filtering. This yielded a mean error of
-$13.7 \pm 10.8$ for $n = 1$, $k = 10$, $p = 0.9$, $lambda = 1000$ and 10
+$13.7 \pm 10.8$ for $n = 1$, $k = 10$, $p = 0.9$, $\lambda = 1000$ and 10
 iterations of stochastic gradient descent. In other words, this simple approach
 did not really improve rating prediction performance significantly.
 
@@ -479,9 +479,9 @@ examples and $i$ the number of iterations), and gets slower with
 the number of iterations desired. Once it is done though, similarities between
 critics as well as estimated movie ratings can be computed in constant time.
 Therefore on average computing the similarity between two critics takes
-$O(iM/N)$ time.
+$O(it/N^2)$ time, where $t/N^2 << M/N$.
 
-On the other hand, there is no real learning phase in the case collaborative
+On the other hand, there is no real learning phase in the case of collaborative
 filtering. Computing the similarity between two critics takes $O(M)$ time at
 worst (it can be optimized by using sparse matrix representations). However
 estimating a movie rating takes $O(N)$, so estimating every movie rating for
