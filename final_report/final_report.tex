@@ -104,7 +104,7 @@ access to more information about them to use in our algorithms.
 \subsection{Recommender Systems}
 
 Our goal is to recommend critics to a user
-based on past critic ratings and past user ratings. In machile learning terms,
+based on past critic ratings and past user ratings. In machine learning terms,
 we are trying to build a recommender system.
 
 Formally, a recommender system takes a set of users $U = \{u_1, ..., u_N\}$, a
@@ -340,7 +340,7 @@ unless the largest regularization constant $\lambda = 1000$ is used.
 
 It is interesting that when the matrix factorization eventually overfits 
 badly, as in the first diagram of Figure \ref{fig:fac-d40}, the graph of 
-Error vs. Iteration looks like a standard bias-variance tradeoff. Although 
+Error vs. Iteration looks like a standard bias-variance trade-off. Although 
 at first this seems unintuitive at first, it makes sense when we consider that 
 iterations is a measure of model complexity. With few iterations, even with 
 many dimensions, it is not possible to reach all that many configurations. 
@@ -357,7 +357,7 @@ error of approximately \matrixtesterror.
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d1l10.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d1l100.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d1l1000.png}
-\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stocastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
+\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stochastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 1, and the learned movie matrix was 1 by count(movies).}
 \label{fig:fac-d1}
 \end{figure}
 \begin{figure}[H]
@@ -366,7 +366,7 @@ error of approximately \matrixtesterror.
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d10l10.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d10l100.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d10l1000.png}
-\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stocastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
+\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stochastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 10, and the learned movie matrix was 10 by count(movies).}
 \label{fig:fac-d10}
 \end{figure}
 \begin{figure}[H]
@@ -375,7 +375,7 @@ error of approximately \matrixtesterror.
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d25l10.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d25l100.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d25l1000.png}
-\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stocastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
+\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stochastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 25, and the learned movie matrix was 25 by count(movies).}
 \label{fig:fac-d25}
 \end{figure}
 \begin{figure}[H]
@@ -384,7 +384,7 @@ error of approximately \matrixtesterror.
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d40l10.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d40l100.png}
 \includegraphics[width=0\factwidth\textwidth,height=\factheight]{matrix_plots/test-i40d40l1000.png}
-\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stocastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
+\caption{Mean absolute training and test error over 20 iterations in the stochastic matrix factorization model. Stochastic gradient descent was performed using a step size of 0.002. The learned critic matrix was count(critics) by 40, and the learned movie matrix was 40 by count(movies).}
 \label{fig:fac-d40}
 \end{figure}
 
