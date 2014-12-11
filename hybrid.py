@@ -24,7 +24,8 @@ def main():
     
     err = np.zeros(len(r_test))
     for i, (c,m,s) in enumerate(r_test):
-        mf = sgd.predict(c,m)
+        mf = sgd.predict(c,m) + mu
+        print("score = {}, mf = {}, collab = {}".format(s, mf, est[c-1, m-1]))
         err[i] = abs(s - (mf + est[c-1, m-1])/2)
 
     err_avg = np.mean(err)
