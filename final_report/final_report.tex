@@ -488,18 +488,13 @@ A possible avenue of improvement for this problem would be to investigate
 possible combinations of the two approaches that may yield better
 results, by drawing on each one's particular strengths.
 
-A second extension would be to extract more features from data we already
+Additionally, it would be interesting to extract more features from data we
+already
 have (review publication, movie director, cast, runtime, MPAA rating, etc.) and
 integrate them in our matrix factorization model. Adding these fixed features
 to the feature matrices would allow us to more accurately learn the remaining
 features and therefore enable us to learn a better measure of critic
 similarity.
-
-A third extension would be to do text analysis on reviews in order to extract
-critic features (vocabulary, length of reviews, \dots) and movie features (we
-could learn the movie genre, what emotions it evokes, \dots). This would
-require a significant amount of work, as sentiment analysis is another entire
-field of machine learning.
 
 \bibliography{bibliography}{}
 \bibliographystyle{plain}
