@@ -150,11 +150,25 @@ their tastes. By then learning user features with the same movie features, we
 could then hope to compare users' and critics' tastes, and therefore recommend 
 critics to users. 
 
-We decided to learn critic and movie features through matrix factorization, as described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes an a content-based recommender system which learns user and item features by modeling the ratings matrix as the product of an user feature matrix and an item feature matrix. This translates to the following minimization problem:
-$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 + \lambda (\norm{U}_2^2 + \norm{I}_2^2) $$
-Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of $U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of $I$, and $D$ is a tunable number of dimensions.
+We decided to learn critic and movie features through matrix factorization, as
+described by Koren, Bell and Volinsky in \cite{Koren09}. Their paper describes
+a content-based recommender system which learns user and item features by
+modelling the ratings matrix as the product of a user feature matrix and an 
+item feature matrix. This translates to the following minimization problem:
+$$ \min_{U,I} \sum_{k = 1}^{N} \sum_{l = 1}^{M} (R_{k,l} - U_k I_l^T)^2 
++ \lambda (\norm{U}_2^2 + \norm{I}_2^2) $$
+Where $U$ is a $N \times D$ matrix of user features, $U_k$ is the k-th row of
+$U$, $I$ is a $M \times D$ matrix of item features, $I_l$ is the l-th row of
+$I$, and $D$ is a tunable number of dimensions.
 
-Calculating the gradient of this sum of $NM$ terms in turn requires the calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20 million terms for each gradient calculation. Running batch gradient descent on that data would therefore be too slow for our needs, considering the computational power at our disposal. As also described in \cite{Koren09}, we thus decided to use stochastic gradient descent as our minimization algorithm, which only calculates the gradient of one term of the huge sum at each iteration.
+Calculating the gradient of this sum of $NM$ terms in turn requires the
+calculation of the sum of $NM$ terms. In our case, for the Rotten Tomatoes 
+data, $N = 4474$ and $M = 4538$, which means that we would need to sum over 20
+million terms for each gradient calculation. Running batch gradient descent on
+that data would therefore be too slow for our needs, considering the
+computational power at our disposal. As also described in \cite{Koren09}, we
+thus decided to use stochastic gradient descent as our minimization algorithm,
+which only calculates the gradient of one term of the huge sum at each iteration.
 
 
 \section{Collaborative Filtering}
