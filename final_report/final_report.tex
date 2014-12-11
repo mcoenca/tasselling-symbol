@@ -314,30 +314,36 @@ a median of 10 movies. This gave us a dataset sufficiently dense to learn from.
 
 \section{Matrix factorization results}
 
-Figures 6-9 show some of the results we obtained with this technique. We first 
-tried with only one dimension per user and critic $D=1$. As shown in Figure 
-\ref{fig:1}, this produces quite unimpressive results. This model is far too 
+Figures \ref{fig:fac-d1} to \ref{fig:fac-d40} show some of the results we 
+obtained with this technique. We first tried with only one dimension 
+per user and critic $D=1$. As shown in Figure  \ref{fig:fac-d1}, this 
+produces quite unimpressive results. This model is far too 
 simple to learn anything particularly interesting. All we can really learn here 
-is how lenient critics are, and the average rating given to a movie.
+is how lenient critics are, and the average rating given to a movie. This does 
+give us some improvement over simply choosing the mean rating for each movie, 
+which produces an average error of $20$. Also, even with no regularization we 
+overfit very little.
 
 As we increase the number of features, we see that our training and test error 
 both improve. However, as this occurs the training and test error become less 
-correlated. We see that with a larger number of dimensions we become more 
-vulnerable to over fitting, and the regularization parameter $\lambda$ becomes 
-increasingly important. It is interesting that, throughout our different 
-models, though the training error varies significantly, the test error 
-consistently reaches a minimum at around $0.43$. 
+correlated. With a larger number of dimensions we become more vulnerable to 
+over fitting, and the regularization parameter $\lambda$ becomes 
+increasingly important. This is particularly notable in Figures 
+\ref{fig:fac-d40} and \ref{fig:fac-d25} where the test error quickly diverges
+unless the largest regularization constant $\lambda = 1000$ is used.
+
+It is interesting that when the matrix factorization eventually overfits 
+badly, as in the first diagram of Figure \ref{fig:fac-d40}, the graph of 
+Error vs. Iteration looks like a standard bias-variance tradeoff. Although 
+at first this seems unintuitive at first, it makes sense when we consider that 
+iterations is a measure of model complexity. With few iterations, even with 
+many dimensions, it is not possible to reach all that many configurations. 
+It would be interesting to see how an iteration dependent regularization 
+constant performs. 
 
 The best test error seems to occur in the most complex model with the highest 
-regularization constant $D=40$, $\lambda = 10$, but it is not much better than 
-the test error achieved in other models.
-
-Since the data has mean zero and standard deviation one, the zero predictor, 
-which assigns a rating of zero to every element would give us an average 
-squared error of $1.0$, and the random predictor who assigns a rating with 
-mean zero and standard deviation would give an average squared error of $2.0$. 
-Our model at $0.43$ does do significantly better than random, but not well 
-enough for us to reliably determine critic similarity
+regularization constant $D=40$, $\lambda = 1000$. Here our model achieves an 
+error of approximately \matrixtesterror.
 
 \begin{figure}[H]
 \centering
